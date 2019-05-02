@@ -1,11 +1,14 @@
 package com.webfactory.springbootdemo.demoproject.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "User")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private String email;
     private String password;
@@ -13,14 +16,24 @@ public class User {
     private String firstName;
     private String lastName;
 
-    public User(){}
+    public User() {
+    }
 
-    public User(String email, String password, String nickname, String firstName, String lastName) {
+    public User(Long id, String email, String password, String nickname, String firstName, String lastName) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmail() {
