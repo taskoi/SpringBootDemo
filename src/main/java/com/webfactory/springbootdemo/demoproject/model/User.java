@@ -25,7 +25,7 @@ public class User implements Serializable {
     private String email;
 
     //na krajot treba da se proveri dali treba .*$ ili .+$
-    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+])(?=.*\\d\\s).+$")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")
     @Size(min = 8, max = 120)
     @Column(name = "password")
     private String password;
