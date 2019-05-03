@@ -7,6 +7,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "mm_user")
@@ -38,6 +40,15 @@ public class User implements Serializable {
     @Column(name = "lastName")
     @Size(max = 20)
     private String lastName;
+
+
+    //defining user posts
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> userPostsList;
+
+    //defining user location
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    private Location location;
 
     public User() {
     }

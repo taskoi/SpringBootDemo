@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 
 @Entity
@@ -31,4 +32,11 @@ public class Location {
     @Column(name = "country", nullable = false)
     @Size(max = 120)
     private String country;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "location",cascade = CascadeType.ALL)
+    private List<Post> locationPostsList;
 }

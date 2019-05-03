@@ -19,6 +19,15 @@ public class Post {
     @Size(max = 1000)
     private String description;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id")
+    private Location location;
+
     Post() {
     }
 
@@ -50,4 +59,6 @@ public class Post {
     public void setDescription(String description) {
         this.description = description;
     }
+
+
 }

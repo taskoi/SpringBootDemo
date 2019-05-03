@@ -21,5 +21,7 @@
 
     <!-- Annotated entity classes -->
     <mapping class="com.webfactory.springbootdemo.demoproject.model.User"/>
+    <mapping class="com.webfactory.springbootdemo.demoproject.model.Post"/>
+    <mapping class="com.webfactory.springbootdemo.demoproject.model.Location"/>
 </session-factory>
 </hibernate-configuration>
