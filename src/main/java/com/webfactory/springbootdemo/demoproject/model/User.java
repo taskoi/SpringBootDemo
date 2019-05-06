@@ -47,18 +47,20 @@ public class User implements Serializable {
     private List<Post> userPostsList;
 
     //defining user location
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "location")
     private Location location;
 
     public User() {
     }
 
-    public User(String email, String password, String nickname, String firstName, String lastName) {
+    public User(String email, String password, String nickname, String firstName, String lastName,Location location) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.location = location;
     }
 
     public Long getId() {
@@ -107,5 +109,17 @@ public class User implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public List<Post> getUserPostsList() {
+        return userPostsList;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location){
+        this.location = location;
     }
 }

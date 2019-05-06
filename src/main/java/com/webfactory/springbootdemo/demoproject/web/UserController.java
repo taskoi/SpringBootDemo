@@ -1,15 +1,19 @@
 package com.webfactory.springbootdemo.demoproject.web;
 
+import com.webfactory.springbootdemo.demoproject.exeptions.LocationMissingParameterException;
 import com.webfactory.springbootdemo.demoproject.exeptions.UserMissingParametarException;
 import com.webfactory.springbootdemo.demoproject.exeptions.UserNotFoundException;
 import com.webfactory.springbootdemo.demoproject.model.User;
 import com.webfactory.springbootdemo.demoproject.model.UserForm;
+import com.webfactory.springbootdemo.demoproject.service.PostService;
 import com.webfactory.springbootdemo.demoproject.service.UserService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
@@ -22,15 +26,16 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    PostService postService;
+
     @PostMapping("/createUser")
-    public User createUser(@Valid @RequestBody UserForm userForm, HttpServletResponse response) throws UserMissingParametarException {
-        User userNew = userService.createUser(userForm);
-        response.setHeader("Location", "/users/" + userForm.getId());
-        return userNew;
+    public User createUser(@Valid @RequestBody UserForm userForm) throws UserMissingParametarException {
+        return userService.createUser(userForm);
     }
 
     @PatchMapping("/updateUser/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParametarException {
+    public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParametarException, LocationMissingParameterException {
         return userService.updateUser(userForm,id);
     }
 

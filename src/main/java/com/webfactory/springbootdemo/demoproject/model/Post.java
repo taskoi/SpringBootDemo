@@ -2,10 +2,11 @@ package com.webfactory.springbootdemo.demoproject.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "post")
-public class Post {
+public class Post implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,20 +21,22 @@ public class Post {
     private String description;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "location")
     private Location location;
 
-    Post() {
+    public Post() {
     }
 
-    public Post(@Size(max = 120) String title, @Size(max = 1000) String description) {
+    public Post(@Size(max = 120) String title, @Size(max = 1000) String description,User user,Location location) {
         this.title = title;
         this.description = description;
+        this.user = user;
+        this.location = location;
     }
 
     public Long getId() {
@@ -60,5 +63,19 @@ public class Post {
         this.description = description;
     }
 
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 }

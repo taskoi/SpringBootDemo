@@ -2,6 +2,7 @@ package com.webfactory.springbootdemo.demoproject.model;
 
 
 public class UserForm {
+
     String firstName;
     String lastName;
     String nickname;
@@ -9,17 +10,20 @@ public class UserForm {
     String email;
     Long id;
 
+    Location location;
+
     public UserForm(){
 
     }
 
-    public UserForm(Long id,String firstName, String lastName, String nickname, String password, String email) {
+    public UserForm(Long id,String firstName, String lastName, String nickname, String password, String email, Location location) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
         this.password = password;
         this.email = email;
         this.id = id;
+        this.location = location;
     }
 
     public Long getId() {
@@ -67,5 +71,9 @@ public class UserForm {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Location getLocation(){
+        return this.location;
     }
 }
