@@ -26,7 +26,7 @@ public class Post implements Serializable {
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "location")
+    @JoinColumn(name = "location_id")
     private Location location;
 
     public Post() {

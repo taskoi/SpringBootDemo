@@ -47,8 +47,12 @@ public class PostService {
         location.setCity(postForm.getLocation().getCity());
 
 
-        return null;
+        actualUser.getUserPostsList().add(post);
+        actualUser.getLocation().getLocationPostsList().add(post);
+        locationRepository.save(post.getLocation());
+        userRepository.save(actualUser);
 
+        return post;
     }
 
     public Post updatePost(Long id, PostForm postForm){
