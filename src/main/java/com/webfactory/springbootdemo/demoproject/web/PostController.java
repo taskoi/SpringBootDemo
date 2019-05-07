@@ -2,6 +2,8 @@ package com.webfactory.springbootdemo.demoproject.web;
 
 import com.webfactory.springbootdemo.demoproject.model.Post;
 import com.webfactory.springbootdemo.demoproject.model.PostForm;
+import com.webfactory.springbootdemo.demoproject.model.PostModify;
+import com.webfactory.springbootdemo.demoproject.model.PostResponse;
 import com.webfactory.springbootdemo.demoproject.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -21,13 +23,13 @@ public class PostController  {
 
 
     @PostMapping("/createPost")
-    public Post createPost(@Valid @RequestBody PostForm postForm){
+    public PostResponse createPost(@Valid @RequestBody PostForm postForm){
         return postService.createPost(postForm);
     }
 
     @PatchMapping("/updatePost/{id}")
-    public Post updatePost(@Valid @PathVariable Long id, @RequestBody PostForm postForm){
-        return postService.updatePost(id,postForm);
+    public Post updatePost(@Valid @PathVariable Long id, @RequestBody PostModify postModify){
+        return postService.updatePost(id,postModify);
     }
 
     @GetMapping("/findAllPosts")

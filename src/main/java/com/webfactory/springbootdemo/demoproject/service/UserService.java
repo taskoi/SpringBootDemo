@@ -119,8 +119,10 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User findByNickname(String nickname){
-        return userRepository.findByNickname(nickname);
+    public List<User> findByNickname(String nickname){
+        List<User> all = userRepository.findAll();
+        all.stream().filter(user -> user.getNickname().equals(nickname)).collect(Collectors.toList());
+        return all;
     }
 
     public List<User> findByLocationCity(String city){
@@ -129,28 +131,7 @@ public class UserService {
         return all;
     }
 
-//    public Post addUserPost(PostForm postForm){
-//        Optional<User> user = userRepository.findById(postForm.getUser().getId());
-//        User actualUser = user.get();
-//
-//        Post post = new Post();
-//        Location location = new Location();
-//
-//        post.setTitle(postForm.getTitle());
-//        post.setDescription(postForm.getDescription());
-//
-//        actualUser.getLocation().setCity(postForm.getLocation().getCity());
-//        actualUser.getLocation().setLongitude(postForm.getLocation().getLongitude());
-//        actualUser.getLocation().setLatitude(postForm.getLocation().getLatitude());
-//        actualUser.getLocation().setCountry(postForm.getLocation().getCountry());
-//
-//        actualUser.getUserPostsList().add(post);
-//        actualUser.getLocation().getLocationPostsList().add(post);
-//        locationRepository.save(actualUser.getLocation());
-//        userRepository.save(actualUser);
-//
-//        return post;
-//    }
+
 }
 
 

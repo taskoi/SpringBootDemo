@@ -1,9 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.service;
 
-import com.webfactory.springbootdemo.demoproject.model.Location;
-import com.webfactory.springbootdemo.demoproject.model.Post;
-import com.webfactory.springbootdemo.demoproject.model.PostForm;
-import com.webfactory.springbootdemo.demoproject.model.User;
+import com.webfactory.springbootdemo.demoproject.model.*;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.PostRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
@@ -12,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -29,7 +27,7 @@ public class PostService {
     UserService userService;
 
 
-    public Post createPost(PostForm postForm){
+    public PostResponse createPost(PostForm postForm){
         Optional<User> user = userRepository.findById(postForm.getUser().getId());
         User actualUser = user.get();
 
@@ -49,23 +47,34 @@ public class PostService {
 
         actualUser.getUserPostsList().add(post);
         actualUser.getLocation().getLocationPostsList().add(post);
-        locationRepository.save(post.getLocation());
+
+
+        post.setUser(actualUser);
+        post.setLocation(location);
+        postRepository.save(post);
+
+        locationRepository.save(location);
         userRepository.save(actualUser);
 
-        return post;
+        PostResponse postResponse = new PostResponse();
+        postResponse.setId(post.getId());
+        postResponse.setTitle(postForm.getTitle());
+        postResponse.setDescription(postForm.getDescription());
+        postResponse.setLocation(location);
+        postResponse.setUserEmail(postForm.getUser().getEmail());
+        postResponse.setUserId(postForm.getUser().getId());
+
+        return postResponse;
     }
 
-    public Post updatePost(Long id, PostForm postForm){
+    public Post updatePost(Long id, PostModify postModify){
         Optional<Post> post = postRepository.findById(id);
         Post actualPost = post.get();
 
-        if(postForm.getDescription() != null)
-            actualPost.setDescription(postForm.getDescription());
-        if(postForm.getTitle() != null)
-            actualPost.setTitle(postForm.getTitle());
-
-        System.out.println(post);
-        System.out.println(actualPost);
+        if(!postModify.getTitle().equals(""))
+            actualPost.setTitle(postModify.getTitle());
+        if(!postModify.getDescription().equals(""))
+            actualPost.setDescription(postModify.getDescription());
 
         return postRepository.save(actualPost);
     }
@@ -80,5 +89,21 @@ public class PostService {
 
     public void deletePost(Long id){
         postRepository.deleteById(id);
+    }
+
+    public List<Post> findByTitle(String postTitle){
+        List<Post> all = postRepository.findAll();
+        all.stream().filter(post -> post.getTitle().equals(postTitle)).collect(Collectors.toList());;
+        return all;
+    }
+
+    public List<Post> findByLocation(Location location){
+        List<Post> all = postRepository.findAll();
+        all.stream().filter(post -> post.getLocation().getLatitude().equals(location.getLatitude()) &&
+                post.getLocation().getLongitude().equals(location.getLongitude()) &&
+                post.getLocation().getCountry().equals(location.getCity()) &&
+                post.getLocation().getCity().equals(location.getCity())).collect(Collectors.toList());
+
+        return all;
     }
 }
