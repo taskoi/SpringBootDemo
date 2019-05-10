@@ -9,6 +9,7 @@ import com.webfactory.springbootdemo.demoproject.service.PostService;
 import com.webfactory.springbootdemo.demoproject.service.UserService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class UserController {
     PostService postService;
 
     @PostMapping("/createUser")
+    @PreAuthorize("#oauth2.hasScope('write')")
     public User createUser(@Valid @RequestBody UserForm userForm) throws UserMissingParametarException {
         return userService.createUser(userForm);
     }

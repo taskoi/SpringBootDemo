@@ -8,6 +8,7 @@ public class UserForm {
     String nickname;
     String password;
     String email;
+    String username;
     Long id;
 
     Location location;
@@ -16,11 +17,12 @@ public class UserForm {
 
     }
 
-    public UserForm(Long id,String firstName, String lastName, String nickname, String password, String email, Location location) {
+    public UserForm(Long id,String firstName, String lastName, String nickname,String username, String password, String email, Location location) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
         this.password = password;
+        this.username = username;
         this.email = email;
         this.id = id;
         this.location = location;
@@ -75,5 +77,17 @@ public class UserForm {
 
     public Location getLocation(){
         return this.location;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

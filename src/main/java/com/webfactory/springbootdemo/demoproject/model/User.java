@@ -1,18 +1,21 @@
 package com.webfactory.springbootdemo.demoproject.model;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "mm_user")
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +44,9 @@ public class User implements Serializable {
     @Size(max = 20)
     private String lastName;
 
+    @Column(name = "username")
+    @NotEmpty
+    private String username;
 
     //defining user posts
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -51,11 +57,18 @@ public class User implements Serializable {
     @JoinColumn(name = "location")
     private Location location;
 
+
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
+
+
     public User() {
     }
 
-    public User(String email, String password, String nickname, String firstName, String lastName,Location location) {
+    public User(String email,String username, String password, String nickname, String firstName, String lastName,Location location) {
         this.email = email;
+        this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.firstName = firstName;
@@ -77,10 +90,6 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public void setPassword(String password) {
@@ -122,4 +131,56 @@ public class User implements Serializable {
     public void setLocation(Location location){
         this.location = location;
     }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setUserPostsList(List<Post> userPostsList) {
+        this.userPostsList = userPostsList;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+    
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

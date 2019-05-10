@@ -43,6 +43,8 @@ public class UserService {
         else if(userForm.getLocation() == null) {
             throw new UserMissingParametarException("Missing parameter -> User's location");
         }
+        else if(userForm.getUsername().equals(""))
+            throw  new UserMissingParametarException("Missing parameter -> Username");
         else
         {
             user.setEmail(userForm.getEmail());
@@ -50,7 +52,7 @@ public class UserService {
             user.setLastName(userForm.getLastName());
             user.setPassword(userForm.getPassword());
             user.setNickname(userForm.getNickname());
-
+            user.setUsername(userForm.getUsername());
             location.setCity(userForm.getLocation().getCity());
             location.setCountry(userForm.getLocation().getCountry());
             location.setLatitude(userForm.getLocation().getLatitude());
@@ -82,6 +84,8 @@ public class UserService {
             actualUser.setFirstName(userForm.getFirstName());
         if(userForm.getEmail() != null)
             actualUser.setEmail(userForm.getEmail());
+        if(userForm.getUsername() != null)
+            actualUser.setUsername(userForm.getUsername());
         if(userForm.getLocation() != null){
             if(userForm.getLocation().getCity().equals(""))
                 throw new LocationMissingParameterException("Missing parameter city");
