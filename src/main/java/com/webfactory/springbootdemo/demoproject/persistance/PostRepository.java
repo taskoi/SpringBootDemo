@@ -2,6 +2,7 @@ package com.webfactory.springbootdemo.demoproject.persistance;
 
 import com.webfactory.springbootdemo.demoproject.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
