@@ -23,6 +23,7 @@ public class SecurityServerConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManager() throws Exception{
         return super.authenticationManager();
     }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
         auth
