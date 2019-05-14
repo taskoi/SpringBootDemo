@@ -1,5 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,14 +9,12 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "mm_user")
-public class User implements Serializable, UserDetails {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,15 +57,16 @@ public class User implements Serializable, UserDetails {
     private Location location;
 
 
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles = new ArrayList<>();
-
+    @ManyToMany(cascade =  CascadeType.ALL,fetch = FetchType.EAGER)
+    @JsonIgnore
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> roles = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String email,String username, String password, String nickname, String firstName, String lastName,Location location) {
+    public User(String email,String username, String password, String nickname, String firstName,
+                String lastName,Location location,List<Role> roles) {
         this.email = email;
         this.username = username;
         this.password = password;
@@ -74,6 +74,7 @@ public class User implements Serializable, UserDetails {
         this.firstName = firstName;
         this.lastName = lastName;
         this.location = location;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -140,47 +141,26 @@ public class User implements Serializable, UserDetails {
         this.userPostsList = userPostsList;
     }
 
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-    }
-    
-    @Override
     public String getPassword() {
         return password;
     }
 
-    @Override
     public String getUsername() {
         return username;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    //    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+//    }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 
 }

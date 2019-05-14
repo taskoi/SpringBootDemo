@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,11 +31,19 @@ public class UserController {
     @Autowired
     PostService postService;
 
+//    //OAUTH
+//    @RequestMapping("user")
+//    @ResponseBody
+//    public Principal user(Principal principal){
+//        return principal;
+//    }
+
+
     @PostMapping("/createUser")
-    @PreAuthorize("#oauth2.hasScope('write')")
     public User createUser(@Valid @RequestBody UserForm userForm) throws UserMissingParametarException {
         return userService.createUser(userForm);
     }
+
 
     @PatchMapping("/updateUser/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParametarException, LocationMissingParameterException {

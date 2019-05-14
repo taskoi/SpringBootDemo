@@ -1,6 +1,9 @@
 package com.webfactory.springbootdemo.demoproject.model;
 
 
+import java.util.List;
+import java.util.Set;
+
 public class UserForm {
 
     String firstName;
@@ -13,11 +16,13 @@ public class UserForm {
 
     Location location;
 
+    List<Role> roles;
+
     public UserForm(){
 
     }
 
-    public UserForm(Long id,String firstName, String lastName, String nickname,String username, String password, String email, Location location) {
+    public UserForm(Long id, String firstName, String lastName, String nickname, String username, String password, String email, Location location, List<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
@@ -26,6 +31,7 @@ public class UserForm {
         this.email = email;
         this.id = id;
         this.location = location;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -89,5 +95,13 @@ public class UserForm {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }
