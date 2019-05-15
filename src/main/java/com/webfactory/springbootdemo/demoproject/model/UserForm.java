@@ -18,7 +18,7 @@ public class UserForm {
 
     List<Role> roles;
 
-    public UserForm(){
+    public UserForm() {
 
     }
 
@@ -38,9 +38,10 @@ public class UserForm {
         return this.id;
     }
 
-    public void setId(Long id){
+    public void setId(Long id) {
         this.id = id;
     }
+
     public String getFirstName() {
         return firstName;
     }
@@ -81,7 +82,7 @@ public class UserForm {
         this.email = email;
     }
 
-    public Location getLocation(){
+    public Location getLocation() {
         return this.location;
     }
 

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@Transactional(propagation =  Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRED)
 public class UserController {
 
     @Autowired
@@ -44,24 +44,24 @@ public class UserController {
         return userService.createUser(userForm);
     }
 
-
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping("/updateUser/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParametarException, LocationMissingParameterException {
-        return userService.updateUser(userForm,id);
+        return userService.updateUser(userForm, id);
     }
 
     @GetMapping("/findAll")
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userService.findAll();
     }
 
     @GetMapping("/findById/{id}")
-    public Optional<User> findUser(@PathVariable Long id){
+    public Optional<User> findUser(@PathVariable Long id) {
         return userService.findById(id);
     }
 
     @DeleteMapping("/deleteUser/{id}")
-    public void deleteUser(@PathVariable Long id){
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 }

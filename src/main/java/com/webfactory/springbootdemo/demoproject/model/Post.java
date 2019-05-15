@@ -35,7 +35,7 @@ public class Post implements Serializable {
     public Post() {
     }
 
-    public Post(@Size(max = 120) String title, @Size(max = 1000) String description,User user,Location location) {
+    public Post(@Size(max = 120) String title, @Size(max = 1000) String description, User user, Location location) {
         this.title = title;
         this.description = description;
         this.user = user;

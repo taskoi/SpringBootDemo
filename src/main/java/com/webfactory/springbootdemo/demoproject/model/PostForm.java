@@ -9,9 +9,10 @@ public class PostForm {
     private User user;
     private Location location;
 
-    public PostForm(){}
+    public PostForm() {
+    }
 
-    public PostForm(Long id,String title, String description,User user,Location location) {
+    public PostForm(Long id, String title, String description, User user, Location location) {
         this.title = title;
         this.description = description;
         this.id = id;
@@ -19,7 +20,7 @@ public class PostForm {
         this.location = location;
     }
 
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 
@@ -31,11 +32,11 @@ public class PostForm {
         return description;
     }
 
-    public User getUser(){
+    public User getUser() {
         return this.user;
     }
 
-    public Location getLocation(){
+    public Location getLocation() {
         return this.location;
     }
 }

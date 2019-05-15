@@ -27,7 +27,7 @@ public class PostService {
     UserService userService;
 
 
-    public PostResponse createPost(PostForm postForm){
+    public PostResponse createPost(PostForm postForm) {
         Optional<User> user = userRepository.findById(postForm.getUser().getId());
         User actualUser = user.get();
 
@@ -67,37 +67,38 @@ public class PostService {
         return postResponse;
     }
 
-    public Post updatePost(Long id, PostModify postModify){
+    public Post updatePost(Long id, PostModify postModify) {
         Optional<Post> post = postRepository.findById(id);
         Post actualPost = post.get();
 
-        if(!postModify.getTitle().equals(""))
+        if (!postModify.getTitle().equals(""))
             actualPost.setTitle(postModify.getTitle());
-        if(!postModify.getDescription().equals(""))
+        if (!postModify.getDescription().equals(""))
             actualPost.setDescription(postModify.getDescription());
 
         return postRepository.save(actualPost);
     }
 
-    public List<Post> findAll(){
+    public List<Post> findAll() {
         return postRepository.findAll();
     }
 
-    public Optional<Post> findPostById(Long id){
+    public Optional<Post> findPostById(Long id) {
         return postRepository.findById(id);
     }
 
-    public void deletePost(Long id){
+    public void deletePost(Long id) {
         postRepository.deleteById(id);
     }
 
-    public List<Post> findByTitle(String postTitle){
+    public List<Post> findByTitle(String postTitle) {
         List<Post> all = postRepository.findAll();
-        all.stream().filter(post -> post.getTitle().equals(postTitle)).collect(Collectors.toList());;
+        all.stream().filter(post -> post.getTitle().equals(postTitle)).collect(Collectors.toList());
+        ;
         return all;
     }
 
-    public List<Post> findByLocation(Location location){
+    public List<Post> findByLocation(Location location) {
         List<Post> all = postRepository.findAll();
         all.stream().filter(post -> post.getLocation().getLatitude().equals(location.getLatitude()) &&
                 post.getLocation().getLongitude().equals(location.getLongitude()) &&

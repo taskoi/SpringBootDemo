@@ -12,7 +12,7 @@ public class UserDetailsImpl implements UserDetails {
 
     private User user;
 
-    public UserDetailsImpl(User user){
+    public UserDetailsImpl(User user) {
         this.user = user;
     }
 

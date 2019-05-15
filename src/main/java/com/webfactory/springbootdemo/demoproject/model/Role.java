@@ -1,7 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.model;
 
 
-
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.persistence.*;
@@ -11,10 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 
-
 @Entity
 @Table(name = "roles")
-public class Role{
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,11 +22,11 @@ public class Role{
     @ManyToMany(mappedBy = "roles")
     private List<User> users = new ArrayList<>();
 
-    public Role () {
+    public Role() {
 
     }
 
-    public Role(String role,List<User> users) {
+    public Role(String role, List<User> users) {
         this.role = role;
         this.users = users;
     }

@@ -21,22 +21,22 @@ public class SearchController {
 
 
     @GetMapping("/findUserByNickname/{nickname}")
-    public List<User> findByNickname(@PathVariable String nickname){
+    public List<User> findByNickname(@PathVariable String nickname) {
         return userService.findByNickname(nickname);
     }
 
     @GetMapping("/findUserByLocation/{locationCity}")
-    public List<User> findByLocationCity(@PathVariable String locationCity){
+    public List<User> findByLocationCity(@PathVariable String locationCity) {
         return userService.findByLocationCity(locationCity);
     }
 
     @GetMapping("/findPostByTitle/{postTitle}")
-    public List<Post> findByTitle(@PathVariable String postTitle){
+    public List<Post> findByTitle(@PathVariable String postTitle) {
         return postService.findByTitle(postTitle);
     }
 
     @PostMapping("/findPostByLocation")
-    public List<Post> findByLocation(@RequestBody Location location){
+    public List<Post> findByLocation(@RequestBody Location location) {
         return postService.findByLocation(location);
     }
 }

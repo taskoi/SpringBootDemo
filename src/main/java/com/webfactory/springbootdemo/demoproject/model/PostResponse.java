@@ -8,9 +8,10 @@ public class PostResponse {
     private String userEmail;
     private Location location;
 
-    public PostResponse(){}
+    public PostResponse() {
+    }
 
-    public PostResponse(Long id, String title, String description,Long userId, String userEmail, Location location) {
+    public PostResponse(Long id, String title, String description, Long userId, String userEmail, Location location) {
         this.id = id;
         this.title = title;
         this.description = description;

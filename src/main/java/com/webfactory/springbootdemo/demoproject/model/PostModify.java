@@ -5,8 +5,8 @@ public class PostModify {
     private String description;
 
 
-
-    public PostModify(){}
+    public PostModify() {
+    }
 
     public PostModify(String title, String description) {
         this.title = title;

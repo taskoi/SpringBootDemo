@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "mm_user")
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,7 +57,7 @@ public class User implements Serializable {
     private Location location;
 
 
-    @ManyToMany(cascade =  CascadeType.ALL,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles = new ArrayList<>();
@@ -65,8 +65,8 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String email,String username, String password, String nickname, String firstName,
-                String lastName,Location location,List<Role> roles) {
+    public User(String email, String username, String password, String nickname, String firstName,
+                String lastName, Location location, List<Role> roles) {
         this.email = email;
         this.username = username;
         this.password = password;
@@ -129,7 +129,7 @@ public class User implements Serializable {
         return location;
     }
 
-    public void setLocation(Location location){
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -141,12 +141,41 @@ public class User implements Serializable {
         this.userPostsList = userPostsList;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<GrantedAuthority> list = new ArrayList<>();
+        for (Role role : getRoles()) {
+            list.add(new SimpleGrantedAuthority(role.getRole()));
+        }
+        return list;
+    }
+
     public String getPassword() {
         return password;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 
     public List<Role> getRoles() {
