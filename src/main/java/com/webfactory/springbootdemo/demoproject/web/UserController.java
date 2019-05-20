@@ -23,6 +23,7 @@ import java.util.Optional;
 
 @RestController
 @Transactional(propagation = Propagation.REQUIRED)
+@RequestMapping("/api")
 public class UserController {
 
     @Autowired
