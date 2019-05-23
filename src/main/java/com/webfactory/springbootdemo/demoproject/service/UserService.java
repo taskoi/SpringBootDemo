@@ -141,6 +141,12 @@ public class UserService implements UserDetailsService {
             }
         }
 
+        if(userForm.getRoles() != null){
+            for (Role r : userForm.getRoles()){
+                actualUser.getRoles().add(r);
+                roleRepository.save(r);
+            }
+        }
         System.out.println(user);
         System.out.println(actualUser);
 

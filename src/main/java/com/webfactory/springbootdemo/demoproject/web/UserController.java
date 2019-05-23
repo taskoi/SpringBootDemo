@@ -44,26 +44,26 @@ public class UserController {
         return userService.createUser(userForm);
     }
 
-    @PreAuthorize("hasAuthority('write')")
+    @PreAuthorize("#oauth2.hasScope('write')")
     @PatchMapping("/updateUser/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParametarException, LocationMissingParameterException {
         return userService.updateUser(userForm, id);
     }
 
-    @PreAuthorize("hasAuthority('read')")
+    @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findAll")
     public List<User> findAll() {
         System.out.println("findAll");
         return userService.findAll();
     }
 
-    @PreAuthorize("hasAuthority('read')")
+    @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findById/{id}")
     public Optional<User> findUser(@PathVariable Long id) {
         return userService.findById(id);
     }
 
-    @PreAuthorize("hasAuthority('write')")
+    @PreAuthorize("#oauth2.hasScope('write')")
     @DeleteMapping("/deleteUser/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
