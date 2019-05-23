@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -26,8 +27,8 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     @Qualifier("userService")
     private UserService userDetailsService;
 
-    @Autowired
-    private PasswordEncoder userPasswordEncoder;
+//    @Autowired
+//    private PasswordEncoder userPasswordEncoder;
 
     @Override
     @Bean
@@ -39,16 +40,17 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     //and setting password encoder
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
+//        auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
+        auth.inMemoryAuthentication()
+                .withUser("user").password("{noop}password").roles("USER");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/login").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().permitAll();
+                .antMatchers("/oauth/token").permitAll()
+                .anyRequest().authenticated();
     }
 
 

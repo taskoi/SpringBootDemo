@@ -39,28 +39,31 @@ public class UserController {
 //        return principal;
 //    }
 
-
     @PostMapping("/createUser")
     public User createUser(@Valid @RequestBody UserForm userForm) throws UserMissingParametarException {
         return userService.createUser(userForm);
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('write')")
     @PatchMapping("/updateUser/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParametarException, LocationMissingParameterException {
         return userService.updateUser(userForm, id);
     }
 
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping("/findAll")
     public List<User> findAll() {
+        System.out.println("findAll");
         return userService.findAll();
     }
 
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping("/findById/{id}")
     public Optional<User> findUser(@PathVariable Long id) {
         return userService.findById(id);
     }
 
+    @PreAuthorize("hasAuthority('write')")
     @DeleteMapping("/deleteUser/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

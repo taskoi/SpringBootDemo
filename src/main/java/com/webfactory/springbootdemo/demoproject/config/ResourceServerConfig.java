@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -21,6 +23,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableResourceServer
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Autowired
@@ -30,22 +33,29 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private TokenStore tokenStore;
+
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.tokenServices(tokenServices());
     }
 
-    @Bean
-    public TokenStore tokenStore() {
-        return new JdbcTokenStore(dataSource);
-    }
-
-
     @Primary
     @Bean
     public DefaultTokenServices tokenServices() {
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-        defaultTokenServices.
+        defaultTokenServices.setTokenStore(tokenStore);
         return defaultTokenServices;
+    }
+
+    private static final String ROOT_PATTERN = "/**";
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+//                .antMatchers(HttpMethod.GET,ROOT_PATTERN).access("#oauth2.hasScope('read')")
+                .antMatchers("/api/createUser").permitAll()
+                .anyRequest().authenticated();
     }
 }

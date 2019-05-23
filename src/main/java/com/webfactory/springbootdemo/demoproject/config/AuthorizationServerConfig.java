@@ -25,6 +25,7 @@ import org.springframework.security.oauth2.provider.code.AuthorizationCodeServic
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
 import javax.sql.DataSource;
@@ -52,17 +53,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients
-                .jdbc(dataSource)
-                .withClient("clientId")
-                .authorizedGrantTypes("implicit")
-                .scopes("read","write")
-                .autoApprove(true)
-                .and()
-                .withClient("clientId1")
-                .secret("secret")
-                .authorizedGrantTypes("password","authorization_code","refresh_token")
-                .scopes("read");
+//        clients.jdbc(this.dataSource);
+        clients.inMemory()
+                .withClient("client")
+                .secret("{noop}secret")
+                .authorizedGrantTypes("password")
+                .scopes("read", "write");
     }
 
     @Override
@@ -70,11 +66,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         endpoints
                 .tokenStore(tokenStore())
                 .authenticationManager(authenticationManager);
+
     }
 
     @Bean
-    public TokenStore tokenStore(){
-        return new JdbcTokenStore(dataSource);
+    public TokenStore tokenStore() {
+//        return new JdbcTokenStore(dataSource);
+        return new InMemoryTokenStore();
     }
 
 }
