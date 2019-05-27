@@ -7,6 +7,7 @@ import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,7 +68,15 @@ public class PostService {
         return postResponse;
     }
 
-    public Post updatePost(Long id, PostModify postModify) {
+    public Post updatePost(Long id, PostModify postModify, Principal principal) {
+        String principal1 = principal.getName();
+        System.out.println(principal1);
+
+        User user = userRepository.findByUsername(principal1);
+
+        System.out.println(user.getEmail());
+
+
         Optional<Post> post = postRepository.findById(id);
         Post actualPost = post.get();
 

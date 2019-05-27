@@ -10,6 +10,9 @@ import com.webfactory.springbootdemo.demoproject.service.UserService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.nio.file.attribute.UserPrincipal;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -32,12 +36,12 @@ public class UserController {
     @Autowired
     PostService postService;
 
-//    //OAUTH
-//    @RequestMapping("user")
-//    @ResponseBody
-//    public Principal user(Principal principal){
-//        return principal;
-//    }
+    //OAUTH
+    @RequestMapping("user")
+    @ResponseBody
+    public Principal user(Principal principal){
+        return principal;
+    }
 
     @PostMapping("/createUser")
     public User createUser(@Valid @RequestBody UserForm userForm) throws UserMissingParametarException {

@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import javax.sql.DataSource;
+import java.security.Principal;
 
 @Configuration
 @EnableResourceServer
@@ -56,6 +57,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http.authorizeRequests()
 //                .antMatchers(HttpMethod.GET,ROOT_PATTERN).access("#oauth2.hasScope('read')")
                 .antMatchers("/api/createUser").permitAll()
+                //.antMatchers("/api/createPost").hasRole("USER")
                 .anyRequest().authenticated();
     }
 }
