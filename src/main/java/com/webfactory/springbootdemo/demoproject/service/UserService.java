@@ -35,25 +35,28 @@ public class UserService implements UserDetailsService {
     RoleRepository roleRepository;
 
 
-//    @PostConstruct
-//    private void addUsers() {
-//        User user = new User();
-//        user.setUsername("ivan");
-//        user.setPassword("Password0102!@");
-//        user.setFirstName("Ivan");
-//        user.setLastName("Tasevski");
-//        user.setEmail("ivan.tasevski@webfactory.mk");
-//        user.setNickname("tasko");
-//        Location location = new Location();
-//        location.setCity("skopje");
-//        location.setLongitude((float)22.22);
-//        location.setLatitude((float)33.33);
-//        location.setCountry("Mk");
-//        user.setLocation(location);
-//        user.getRoles().add("USER");
-//        locationRepository.save(location);
-//        userRepository.save(user);
-//    }
+    @PostConstruct
+    private void addUsers() {
+        User user = new User();
+        user.setUsername("ivan");
+        user.setPassword("Password0102!@");
+        user.setFirstName("Ivan");
+        user.setLastName("Tasevski");
+        user.setEmail("ivan.tasevski@webfactory.mk");
+        user.setNickname("tasko");
+        Location location = new Location();
+        location.setCity("skopje");
+        location.setLongitude((float)22.22);
+        location.setLatitude((float)33.33);
+        location.setCountry("Mk");
+        user.setLocation(location);
+        Role role = new Role();
+        role.setRole("USER");
+        user.getRoles().add(role);
+       // roleRepository.save(role);
+        locationRepository.save(location);
+        userRepository.save(user);
+    }
 
     public User createUser(UserForm userForm) throws UserMissingParametarException {
 

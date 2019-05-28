@@ -56,7 +56,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 //        clients.jdbc(this.dataSource);
         clients.inMemory()
                 .withClient("client")
-                .secret("{noop}secret")
+                .secret("secret")
                 .authorizedGrantTypes("password")
                 .scopes("read", "write");
     }
