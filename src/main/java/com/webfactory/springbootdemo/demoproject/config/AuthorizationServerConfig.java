@@ -40,7 +40,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
 
-
+    @Autowired
+    PasswordEncoder passwordEncoder;
     @Autowired
     private DataSource dataSource;
 
@@ -56,7 +57,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 //        clients.jdbc(this.dataSource);
         clients.inMemory()
                 .withClient("client")
-                .secret("secret")
+                .secret(passwordEncoder.encode("secret"))
                 .authorizedGrantTypes("password")
                 .scopes("read", "write");
     }

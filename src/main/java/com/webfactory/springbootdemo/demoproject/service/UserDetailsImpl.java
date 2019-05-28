@@ -2,13 +2,18 @@ package com.webfactory.springbootdemo.demoproject.service;
 
 import com.webfactory.springbootdemo.demoproject.model.Role;
 import com.webfactory.springbootdemo.demoproject.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
 public class UserDetailsImpl implements UserDetails {
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     private User user;
 

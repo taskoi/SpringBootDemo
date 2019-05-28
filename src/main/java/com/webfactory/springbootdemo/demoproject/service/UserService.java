@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -34,12 +35,15 @@ public class UserService implements UserDetailsService {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
 
     @PostConstruct
     private void addUsers() {
         User user = new User();
         user.setUsername("ivan");
-        user.setPassword("Password0102!@");
+        user.setPassword(passwordEncoder.encode("Password0102!@"));
         user.setFirstName("Ivan");
         user.setLastName("Tasevski");
         user.setEmail("ivan.tasevski@webfactory.mk");
