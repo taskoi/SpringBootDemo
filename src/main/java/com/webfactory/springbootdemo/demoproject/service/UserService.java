@@ -39,28 +39,28 @@ public class UserService implements UserDetailsService {
     PasswordEncoder passwordEncoder;
 
 
-    @PostConstruct
-    private void addUsers() {
-        User user = new User();
-        user.setUsername("ivan");
-        user.setPassword(passwordEncoder.encode("Password0102!@"));
-        user.setFirstName("Ivan");
-        user.setLastName("Tasevski");
-        user.setEmail("ivan.tasevski@webfactory.mk");
-        user.setNickname("tasko");
-        Location location = new Location();
-        location.setCity("skopje");
-        location.setLongitude((float)22.22);
-        location.setLatitude((float)33.33);
-        location.setCountry("Mk");
-        user.setLocation(location);
-        Role role = new Role();
-        role.setRole("USER");
-        user.getRoles().add(role);
-       // roleRepository.save(role);
-        locationRepository.save(location);
-        userRepository.save(user);
-    }
+//    @PostConstruct
+//    private void addUsers() {
+//        User user = new User();
+//        user.setUsername("ivan");
+//        user.setPassword(passwordEncoder.encode("Password0102!@"));
+//        user.setFirstName("Ivan");
+//        user.setLastName("Tasevski");
+//        user.setEmail("ivan.tasevski@webfactory.mk");
+//        user.setNickname("tasko");
+//        Location location = new Location();
+//        location.setCity("skopje");
+//        location.setLongitude((float)22.22);
+//        location.setLatitude((float)33.33);
+//        location.setCountry("Mk");
+//        user.setLocation(location);
+//        Role role = new Role();
+//        role.setRole("USER");
+//        user.getRoles().add(role);
+//       // roleRepository.save(role);
+//        locationRepository.save(location);
+//        userRepository.save(user);
+//    }
 
     public User createUser(UserForm userForm) throws UserMissingParametarException {
 
@@ -88,7 +88,7 @@ public class UserService implements UserDetailsService {
             user.setEmail(userForm.getEmail());
             user.setFirstName(userForm.getFirstName());
             user.setLastName(userForm.getLastName());
-            user.setPassword(userForm.getPassword());
+            user.setPassword(passwordEncoder.encode(userForm.getPassword()));
             user.setNickname(userForm.getNickname());
             user.setUsername(userForm.getUsername());
             location.setCity(userForm.getLocation().getCity());
@@ -117,7 +117,7 @@ public class UserService implements UserDetailsService {
             throw new UserNotFoundException("The user you searched for is not found!");
 
         if (userForm.getPassword() != null)
-            actualUser.setPassword(userForm.getPassword());
+            actualUser.setPassword(passwordEncoder.encode(userForm.getPassword()));
         if (userForm.getNickname() != null)
             actualUser.setNickname(userForm.getNickname());
         if (userForm.getLastName() != null)
@@ -187,6 +187,7 @@ public class UserService implements UserDetailsService {
     public User findByUsername(String username){
         return userRepository.findByUsername(username);
     }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);

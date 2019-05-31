@@ -38,8 +38,6 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//        auth.inMemoryAuthentication()
-//                .withUser("ivan").password("{noop}Password0102!@").roles("USER");
     }
 
     @Override

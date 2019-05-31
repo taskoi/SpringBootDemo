@@ -12,9 +12,6 @@ import java.util.*;
 
 public class UserDetailsImpl implements UserDetails {
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
     private User user;
 
     public UserDetailsImpl(User user) {
