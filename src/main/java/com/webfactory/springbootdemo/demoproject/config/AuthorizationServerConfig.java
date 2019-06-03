@@ -59,7 +59,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Autowired
     @Qualifier("userService")
-    UserDetailsService userDetailsService;
+    UserService userDetailsService;
 
     @Autowired
     AuthClientDetailsService authClientDetailsService;

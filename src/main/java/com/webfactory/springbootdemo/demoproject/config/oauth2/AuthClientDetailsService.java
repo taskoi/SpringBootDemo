@@ -1,5 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.config.oauth2;
 
+
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

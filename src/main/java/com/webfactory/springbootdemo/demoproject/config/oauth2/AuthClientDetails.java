@@ -70,7 +70,7 @@ public class AuthClientDetails implements ClientDetails, Serializable {
 
     @Override
     public Set<String> getAuthorizedGrantTypes() {
-        return null;
+        return new HashSet<>(Collections.singletonList("password"));
     }
 
     @Override
