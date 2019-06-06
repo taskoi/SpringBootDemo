@@ -1,4 +1,6 @@
-package com.webfactory.springbootdemo.demoproject.model;
+package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
+
+import com.webfactory.springbootdemo.demoproject.model.Location;
 
 public class PostResponse {
     private Long id;

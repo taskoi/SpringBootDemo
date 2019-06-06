@@ -1,20 +1,17 @@
 package com.webfactory.springbootdemo.demoproject.web;
 
         import com.webfactory.springbootdemo.demoproject.model.*;
+        import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostForm;
+        import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify;
+        import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostResponse;
         import com.webfactory.springbootdemo.demoproject.service.PostService;
         import com.webfactory.springbootdemo.demoproject.service.UserService;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.security.access.prepost.PreAuthorize;
-        import org.springframework.security.authentication.AbstractAuthenticationToken;
-        import org.springframework.security.core.Authentication;
-        import org.springframework.security.core.context.SecurityContextHolder;
-        import org.springframework.security.core.parameters.P;
-        import org.springframework.security.core.userdetails.UserDetails;
         import org.springframework.security.oauth2.provider.OAuth2Authentication;
         import org.springframework.transaction.annotation.Propagation;
         import org.springframework.transaction.annotation.Transactional;
         import org.springframework.web.bind.annotation.*;
-        import org.springframework.web.client.HttpClientErrorException;
 
         import javax.validation.Valid;
         import java.security.Principal;

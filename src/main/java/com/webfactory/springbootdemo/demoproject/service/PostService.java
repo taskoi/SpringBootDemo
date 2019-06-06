@@ -1,6 +1,9 @@
 package com.webfactory.springbootdemo.demoproject.service;
 
 import com.webfactory.springbootdemo.demoproject.model.*;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostForm;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostResponse;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.PostRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;

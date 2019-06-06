@@ -1,5 +1,8 @@
-package com.webfactory.springbootdemo.demoproject.model;
+package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
 
+
+import com.webfactory.springbootdemo.demoproject.model.Location;
+import com.webfactory.springbootdemo.demoproject.model.Role;
 
 import java.util.List;
 import java.util.Set;

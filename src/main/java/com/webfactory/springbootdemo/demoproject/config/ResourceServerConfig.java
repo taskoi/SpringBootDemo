@@ -39,16 +39,21 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-        resources.tokenServices(tokenServices());
+        resources.tokenServices(tokenServices).tokenStore(tokenStore)
+        .resourceId("/api");
     }
+    @Autowired
+    DefaultTokenServices tokenServices;
 
-    @Primary
-    @Bean
-    public DefaultTokenServices tokenServices() {
-        DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-        defaultTokenServices.setTokenStore(tokenStore);
-        return defaultTokenServices;
-    }
+//    @Primary
+//    @Bean
+//    public DefaultTokenServices tokenServices() {
+//        DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+//        defaultTokenServices.setTokenStore(tokenStore);
+//        return defaultTokenServices;
+//    }
+
+
 
     private static final String ROOT_PATTERN = "/**";
 

@@ -1,26 +1,17 @@
 package com.webfactory.springbootdemo.demoproject.web;
 
-import com.webfactory.springbootdemo.demoproject.exeptions.LocationMissingParameterException;
-import com.webfactory.springbootdemo.demoproject.exeptions.UserMissingParametarException;
-import com.webfactory.springbootdemo.demoproject.exeptions.UserNotFoundException;
+import com.webfactory.springbootdemo.demoproject.exeptions.*;
 import com.webfactory.springbootdemo.demoproject.model.User;
-import com.webfactory.springbootdemo.demoproject.model.UserForm;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
 import com.webfactory.springbootdemo.demoproject.service.PostService;
 import com.webfactory.springbootdemo.demoproject.service.UserService;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.nio.file.attribute.UserPrincipal;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -44,13 +35,13 @@ public class UserController {
     }
 
     @PostMapping("/createUser")
-    public User createUser(@Valid @RequestBody UserForm userForm) throws UserMissingParametarException {
+    public User createUser(@Valid @RequestBody UserForm userForm) throws UserMissingParameterException, EmailNotValidException, LocationMissingParameterException, PasswordNotValidException {
         return userService.createUser(userForm);
     }
 
     @PreAuthorize("#oauth2.hasScope('write')")
     @PatchMapping("/updateUser/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParametarException, LocationMissingParameterException {
+    public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParameterException, LocationMissingParameterException, EmailNotValidException, PasswordNotValidException {
         return userService.updateUser(userForm, id);
     }
 

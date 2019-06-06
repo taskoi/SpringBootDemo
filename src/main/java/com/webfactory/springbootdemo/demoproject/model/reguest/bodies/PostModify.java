@@ -1,4 +1,4 @@
-package com.webfactory.springbootdemo.demoproject.model;
+package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
 
 public class PostModify {
     private String title;

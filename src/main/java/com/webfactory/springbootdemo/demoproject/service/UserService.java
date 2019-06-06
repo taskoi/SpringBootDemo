@@ -1,23 +1,20 @@
 package com.webfactory.springbootdemo.demoproject.service;
 
-import com.webfactory.springbootdemo.demoproject.exeptions.LocationMissingParameterException;
-import com.webfactory.springbootdemo.demoproject.exeptions.UserMissingParametarException;
-import com.webfactory.springbootdemo.demoproject.exeptions.UserNotFoundException;
+import com.webfactory.springbootdemo.demoproject.exeptions.*;
 import com.webfactory.springbootdemo.demoproject.model.*;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,77 +35,80 @@ public class UserService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    private void checkUserForm(UserForm userForm) throws UserMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationMissingParameterException {
+        if (userForm.getEmail().equals(""))
+            throw new UserMissingParameterException("Missing parameter email");
+        if (!validEmail(userForm.getEmail()))
+            throw new EmailNotValidException("Email not valid");
+        if (userForm.getFirstName().equals(""))
+            throw new UserMissingParameterException("Missing parameter first name");
+        if (userForm.getLastName().equals(""))
+            throw new UserMissingParameterException("Missing parameter last name");
+        if (userForm.getPassword().equals(""))
+            throw new UserMissingParameterException("Missing parameter password");
+        if (userForm.getNickname().equals(""))
+            throw new UserMissingParameterException("Missing parameter nickname");
+        if (userForm.getUsername().equals(""))
+            throw new UserMissingParameterException("Missing parameter username");
+        if (userForm.getLocation() == null)
+            throw new UserMissingParameterException("Missing parameter location");
+        if (userForm.getLocation().getCity().equals(""))
+            throw new LocationMissingParameterException("Missing parameter city");
+        else if (userForm.getLocation().getCountry().equals(""))
+            throw new LocationMissingParameterException("Missing parameter country");
+        else if (userForm.getLocation().getLatitude().equals(""))
+            throw new LocationMissingParameterException("Missing parameter latitude");
+        else if (userForm.getLocation().getLongitude().equals(""))
+            throw new LocationMissingParameterException("Missing parameter longitude");
+        if (userForm.getRoles() == null)
+            throw new UserMissingParameterException("Missing parameter user's roles");
+    }
 
-//    @PostConstruct
-//    private void addUsers() {
-//        User user = new User();
-//        user.setUsername("ivan");
-//        user.setPassword(passwordEncoder.encode("Password0102!@"));
-//        user.setFirstName("Ivan");
-//        user.setLastName("Tasevski");
-//        user.setEmail("ivan.tasevski@webfactory.mk");
-//        user.setNickname("tasko");
-//        Location location = new Location();
-//        location.setCity("skopje");
-//        location.setLongitude((float)22.22);
-//        location.setLatitude((float)33.33);
-//        location.setCountry("Mk");
-//        user.setLocation(location);
-//        Role role = new Role();
-//        role.setRole("USER");
-//        user.getRoles().add(role);
-//       // roleRepository.save(role);
-//        locationRepository.save(location);
-//        userRepository.save(user);
-//    }
+    private boolean validEmail(String email) {
+        boolean result = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+        return result;
+    }
 
-    public User createUser(UserForm userForm) throws UserMissingParametarException {
+
+    public User createUser(UserForm userForm) throws UserMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationMissingParameterException {
 
         User user = new User();
         Location location = new Location();
         List<Role> roles = new ArrayList<>();
 
-        if (userForm.getEmail().equals(""))
-            throw new UserMissingParametarException("Missing parameter -> Email");
-        else if (userForm.getFirstName().equals(""))
-            throw new UserMissingParametarException("Missing parameter -> First Name");
-        else if (userForm.getLastName().equals(""))
-            throw new UserMissingParametarException("Missing parameter -> Last Name");
-        else if (userForm.getNickname().equals(""))
-            throw new UserMissingParametarException("Missing parameter -> Nickname");
-        else if (userForm.getPassword().equals(""))
-            throw new UserMissingParametarException("Missing parameter -> Password");
-        else if (userForm.getLocation() == null) {
-            throw new UserMissingParametarException("Missing parameter -> User's location");
-        } else if (userForm.getRoles() == null) {
-            throw new UserMissingParametarException("Missing parameter -> User's role");
-        } else if (userForm.getUsername().equals(""))
-            throw new UserMissingParametarException("Missing parameter -> Username");
-        else {
-            user.setEmail(userForm.getEmail());
-            user.setFirstName(userForm.getFirstName());
-            user.setLastName(userForm.getLastName());
-            user.setPassword(passwordEncoder.encode(userForm.getPassword()));
-            user.setNickname(userForm.getNickname());
-            user.setUsername(userForm.getUsername());
-            location.setCity(userForm.getLocation().getCity());
-            location.setCountry(userForm.getLocation().getCountry());
-            location.setLatitude(userForm.getLocation().getLatitude());
-            location.setLongitude(userForm.getLocation().getLongitude());
-            for (Role r : userForm.getRoles()) {
-                roles.add(r);
-                roleRepository.save(r);
-            }
-            user.setRoles(roles);
-            user.setLocation(location);
-            location.getLocationUsers().add(user);
+        checkUserForm(userForm);
+
+        user.setEmail(userForm.getEmail());
+        user.setFirstName(userForm.getFirstName());
+        user.setLastName(userForm.getLastName());
+        user.setPassword(passwordEncoder.encode(userForm.getPassword()));
+        user.setNickname(userForm.getNickname());
+        user.setUsername(userForm.getUsername());
+        location.setCity(userForm.getLocation().getCity());
+        location.setCountry(userForm.getLocation().getCountry());
+        location.setLatitude(userForm.getLocation().getLatitude());
+        location.setLongitude(userForm.getLocation().getLongitude());
+        for (Role r : userForm.getRoles()) {
+            roles.add(r);
+            roleRepository.save(r);
         }
+
+        user.setRoles(roles);
+        user.setLocation(location);
+        location.getLocationUsers().add(user);
+
 
         locationRepository.save(location);
         return userRepository.save(user);
     }
 
-    public User updateUser(UserForm userForm, Long id) throws UserNotFoundException, UserMissingParametarException, LocationMissingParameterException {
+    public User updateUser(UserForm userForm, Long id) throws UserNotFoundException, UserMissingParameterException, LocationMissingParameterException, EmailNotValidException, PasswordNotValidException {
 
         Optional<User> user = userRepository.findById(id);
         User actualUser = user.get();
@@ -116,46 +116,21 @@ public class UserService implements UserDetailsService {
         if (actualUser == null)
             throw new UserNotFoundException("The user you searched for is not found!");
 
-        if (userForm.getPassword() != null)
-            actualUser.setPassword(passwordEncoder.encode(userForm.getPassword()));
-        if (userForm.getNickname() != null)
-            actualUser.setNickname(userForm.getNickname());
-        if (userForm.getLastName() != null)
-            actualUser.setLastName(userForm.getLastName());
-        if (userForm.getFirstName() != null)
-            actualUser.setFirstName(userForm.getFirstName());
-        if (userForm.getEmail() != null)
-            actualUser.setEmail(userForm.getEmail());
-        if (userForm.getUsername() != null)
-            actualUser.setUsername(userForm.getUsername());
+        checkUserForm(userForm);
 
-        if (userForm.getLocation() != null) {
-            if (userForm.getLocation().getCity().equals(""))
-                throw new LocationMissingParameterException("Missing parameter city");
-            else if (userForm.getLocation().getCountry().equals(""))
-                throw new LocationMissingParameterException("Missing parameter country");
-            else if (userForm.getLocation().getLatitude().equals(""))
-                throw new LocationMissingParameterException("Missing parameter latitude");
-            else if (userForm.getLocation().getLongitude().equals(""))
-                throw new LocationMissingParameterException("Missing parameter longitude");
-            else {
-                actualUser.getLocation().setLongitude(userForm.getLocation().getLongitude());
-                actualUser.getLocation().setLatitude(userForm.getLocation().getLatitude());
-                actualUser.getLocation().setCountry(userForm.getLocation().getCountry());
-                actualUser.getLocation().setCity(userForm.getLocation().getCity());
+        actualUser.getLocation().setLongitude(userForm.getLocation().getLongitude());
+        actualUser.getLocation().setLatitude(userForm.getLocation().getLatitude());
+        actualUser.getLocation().setCountry(userForm.getLocation().getCountry());
+        actualUser.getLocation().setCity(userForm.getLocation().getCity());
 
-                locationRepository.save(actualUser.getLocation());
-            }
-        }
+        locationRepository.save(actualUser.getLocation());
 
-        if(userForm.getRoles() != null){
-            for (Role r : userForm.getRoles()){
+        if (userForm.getRoles() != null) {
+            for (Role r : userForm.getRoles()) {
                 actualUser.getRoles().add(r);
                 roleRepository.save(r);
             }
         }
-        System.out.println(user);
-        System.out.println(actualUser);
 
         return userRepository.save(actualUser);
     }
@@ -184,7 +159,7 @@ public class UserService implements UserDetailsService {
         return all;
     }
 
-    public User findByUsername(String username){
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
@@ -195,6 +170,14 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         System.out.println(user.getFirstName());
         return new UserDetailsImpl(user);
+    }
+
+    @Transactional
+    public UserDetails loadUserById(Long id) throws UserMissingParameterException {
+        Optional<User> user = userRepository.findById(id);
+        if (user == null)
+            throw new UserMissingParameterException("id not found");
+        return new UserDetailsImpl(user.get());
     }
 }
 
