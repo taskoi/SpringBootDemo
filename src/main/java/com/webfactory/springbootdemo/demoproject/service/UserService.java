@@ -148,19 +148,20 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> findByNickname(String nickname) {
-        List<User> all = userRepository.findAll();
-        all.stream().filter(user -> user.getNickname().equals(nickname)).collect(Collectors.toList());
+        List<User> all = userRepository.findAllByNickname(nickname);
+        //all.stream().filter(user -> user.getNickname().equals(nickname)).collect(Collectors.toList());
         return all;
     }
 
     public List<User> findByLocationCity(String city) {
-        List<User> all = userRepository.findAll();
-        all.stream().filter(user -> user.getLocation().getCity().equals(city)).collect(Collectors.toList());
+        List<User> all = userRepository.findAllByLocationCityContaining(city);
+      //  all.stream().filter(user -> user.getLocation().getCity().equals(city)).collect(Collectors.toList());
         return all;
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public List<User> findByUsername(String username) {
+        List<User> all = userRepository.findAllByUsername(username);
+        return all;
     }
 
     @Override

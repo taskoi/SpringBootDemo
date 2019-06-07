@@ -1,5 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.service;
 
+import com.webfactory.springbootdemo.demoproject.exeptions.PostMissingParameterException;
 import com.webfactory.springbootdemo.demoproject.model.*;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostForm;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify;
@@ -30,10 +31,18 @@ public class PostService {
     @Autowired
     UserService userService;
 
+    private void checkPostForm(PostForm postForm) throws PostMissingParameterException {
+        if(postForm.getDescription().equals(""))
+            throw new PostMissingParameterException("Missing parameter description");
+        if(postForm.getTitle().equals(""))
+            throw new PostMissingParameterException("Missing parameter title");
+    }
 
-    public PostResponse createPost(PostForm postForm) {
+    public PostResponse createPost(PostForm postForm) throws PostMissingParameterException {
         Optional<User> user = userRepository.findById(postForm.getUser().getId());
         User actualUser = user.get();
+
+        checkPostForm(postForm);
 
         Post post = new Post();
         Location location = new Location();
@@ -104,18 +113,18 @@ public class PostService {
     }
 
     public List<Post> findByTitle(String postTitle) {
-        List<Post> all = postRepository.findAll();
-        all.stream().filter(post -> post.getTitle().equals(postTitle)).collect(Collectors.toList());
-        ;
+        List<Post> all = postRepository.findAllByTitle(postTitle);
+//        all.stream().filter(post -> post.getTitle().equals(postTitle)).collect(Collectors.toList());
+//        ;
         return all;
     }
 
     public List<Post> findByLocation(Location location) {
-        List<Post> all = postRepository.findAll();
-        all.stream().filter(post -> post.getLocation().getLatitude().equals(location.getLatitude()) &&
-                post.getLocation().getLongitude().equals(location.getLongitude()) &&
-                post.getLocation().getCountry().equals(location.getCity()) &&
-                post.getLocation().getCity().equals(location.getCity())).collect(Collectors.toList());
+        List<Post> all = postRepository.findAllByLocation(location);
+//        all.stream().filter(post -> post.getLocation().getLatitude().equals(location.getLatitude()) &&
+//                post.getLocation().getLongitude().equals(location.getLongitude()) &&
+//                post.getLocation().getCountry().equals(location.getCity()) &&
+//                post.getLocation().getCity().equals(location.getCity())).collect(Collectors.toList());
 
         return all;
     }

@@ -20,6 +20,7 @@ package com.webfactory.springbootdemo.demoproject.web;
 
 @RestController
 @Transactional(propagation = Propagation.REQUIRED)
+@RequestMapping("/api")
 public class PostController {
 
     @Autowired
