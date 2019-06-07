@@ -1,5 +1,7 @@
 package com.webfactory.springbootdemo.demoproject.web;
 
+import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostNotFoundException;
+import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.UserNotFoundException;
 import com.webfactory.springbootdemo.demoproject.model.Location;
 import com.webfactory.springbootdemo.demoproject.model.Post;
 import com.webfactory.springbootdemo.demoproject.model.User;
@@ -23,25 +25,25 @@ public class SearchController {
 
     @GetMapping("/findUserByNickname/{nickname}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public List<User> findByNickname(@PathVariable String nickname) {
+    public List<User> findByNickname(@PathVariable String nickname) throws UserNotFoundException {
         return userService.findByNickname(nickname);
     }
 
     @GetMapping("/findUserByLocation/{locationCity}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public List<User> findByLocationCity(@PathVariable String locationCity) {
+    public List<User> findByLocationCity(@PathVariable String locationCity) throws UserNotFoundException {
         return userService.findByLocationCity(locationCity);
     }
 
     @GetMapping("/findPostByTitle/{postTitle}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public List<Post> findByTitle(@PathVariable String postTitle) {
+    public List<Post> findByTitle(@PathVariable String postTitle) throws PostNotFoundException {
         return postService.findByTitle(postTitle);
     }
 
     @PostMapping("/findPostByLocation")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public List<Post> findByLocation(@RequestBody Location location) {
+    public List<Post> findByLocation(@RequestBody Location location) throws PostNotFoundException {
         return postService.findByLocation(location);
     }
 }
