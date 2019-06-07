@@ -1,5 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.web;
 
+        import com.webfactory.springbootdemo.demoproject.exeptions.PostMissingParameterException;
         import com.webfactory.springbootdemo.demoproject.model.*;
         import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostForm;
         import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify;
@@ -29,28 +30,32 @@ public class PostController {
     @Autowired
     UserService userService;
 
-    @PreAuthorize("#oauth2.hasScope('write')")
+    @PreAuthorize("#oauth2.hasScope('write') and #oauth2.clientHasRole('USER')")
     @PostMapping("/createPost")
-    public PostResponse createPost(@Valid @RequestBody PostForm postForm, OAuth2Authentication authentication) {
+    public PostResponse createPost(@Valid @RequestBody PostForm postForm, OAuth2Authentication authentication) throws PostMissingParameterException {
         return postService.createPost(postForm);
     }
 
+    @PreAuthorize("#oauth2.hasScope('write') and #oauth2.clientHasRole('USER')")
     @PatchMapping("/updatePost/{id}")
     public Post updatePost(@Valid @PathVariable Long id, @RequestBody PostModify postModify, Principal principal) {
         return postService.updatePost(id, postModify,principal);
     }
 
+    @PreAuthorize("#oauth2.hasScope('read') and #oauth2.clientHasRole('USER')")
     @GetMapping("/findAllPosts")
     public List<Post> findAll() {
         return postService.findAll();
     }
 
+    @PreAuthorize("#oauth2.hasScope('read') and #oauth2.clientHasRole('USER')")
     @GetMapping("/findPostById/{id}")
     public Optional<Post> findPost(@PathVariable Long id) {
         return postService.findPostById(id);
     }
 
     @DeleteMapping("/deletePost/{id}")
+    @PreAuthorize("#oauth2.hasScope('write') and #oauth2.clientHasRole('USER')")
     public void deletePost(@PathVariable Long id) {
         postService.deletePost(id);
     }
