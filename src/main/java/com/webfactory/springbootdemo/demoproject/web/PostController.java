@@ -42,7 +42,7 @@ public class PostController {
 
     @PreAuthorize("#oauth2.hasScope('write')")
     @PatchMapping("/updatePost/{id}")
-    public Post updatePost(@Valid @PathVariable Long id, @RequestBody PostModify postModify, Principal principal) throws PostNotFoundException {
+    public Post updatePost(@PathVariable Long id, @RequestBody PostModify postModify, Principal principal) throws PostNotFoundException {
         return postService.updatePost(id, postModify,principal);
     }
 

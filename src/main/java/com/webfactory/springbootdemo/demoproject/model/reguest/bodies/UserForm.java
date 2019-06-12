@@ -4,22 +4,44 @@ package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
 import com.webfactory.springbootdemo.demoproject.model.Location;
 import com.webfactory.springbootdemo.demoproject.model.Role;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
 public class UserForm {
 
-    String firstName;
-    String lastName;
-    String nickname;
-    String password;
-    String email;
-    String username;
-    Long id;
+    @NotNull(message = "First name cannot be null")
+    @Size(max = 20,message = "First name must to be smaller than 20 characters")
+    private String firstName;
 
-    Location location;
+    @NotNull(message = "Last name cannot be null")
+    @Size(max = 20,message = "Last name must to be smaller than 20 characters")
+    private String lastName;
 
-    List<Role> roles;
+    @NotNull(message = "Nickname cannot be null")
+    private String nickname;
+
+    @NotNull(message = "Password cannot be null")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "Password must have minimum 1 char, 1 digit and 1 specital character")
+    @Size(min = 8,max = 120,message = "Password must to be between 8 and 120 characters")
+    private String password;
+
+    @Email
+    @Size(max = 120, message = "Email must to be smaller than 120 characters")
+    @NotNull(message = "Email cannot be null")
+    private String email;
+
+    @NotNull(message = "Username cannot be null")
+    private String username;
+
+    private Long id;
+
+    private Location location;
+
+    private List<Role> roles;
 
     public UserForm() {
 

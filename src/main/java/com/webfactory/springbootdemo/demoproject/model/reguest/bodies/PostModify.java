@@ -1,6 +1,7 @@
 package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
 
 public class PostModify {
+
     private String title;
     private String description;
 

@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class UserExistsException extends Exception {
     public UserExistsException(String s){
-        super(s);
+        super("Email already exists!: " + s);
     }
 }

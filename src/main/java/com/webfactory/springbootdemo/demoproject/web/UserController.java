@@ -29,12 +29,12 @@ public class UserController {
 
     @PostMapping("/createUser")
     public User createUser(@Valid @RequestBody UserForm userForm,Principal principal) throws UserMissingParameterException, EmailNotValidException, LocationMissingParameterException, PasswordNotValidException, LocationParameterOutOfBoundException, UserExistsException, UserParameterOutOfBoundException, NicknameNotValidException {
-        return userService.createUser(userForm,principal);
+        return userService.createUser(userForm);
     }
 
-   @PreAuthorize("#oauth2.hasScope('write')")
+    @PreAuthorize("#oauth2.hasScope('write')")
     @PatchMapping("/updateUser/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParameterException, LocationMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationParameterOutOfBoundException, NicknameNotValidException, UserParameterOutOfBoundException {
+    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParameterException, LocationMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationParameterOutOfBoundException, NicknameNotValidException, UserParameterOutOfBoundException {
         return userService.updateUser(userForm, id);
     }
 

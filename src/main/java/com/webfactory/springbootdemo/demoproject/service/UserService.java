@@ -34,97 +34,48 @@ public class UserService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    private void checkUserForm(UserForm userForm) throws UserMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationMissingParameterException, UserExistsException, UserParameterOutOfBoundException, NicknameNotValidException, LocationParameterOutOfBoundException {
-
-        if (userForm.getUsername().equals(""))
-            throw new UserMissingParameterException("Missing parameter username");
-        if (userForm.getRoles() == null)
-            throw new UserMissingParameterException("Missing parameter user's roles");
-
-        checkEmail(userForm);
-        checkFirstName(userForm);
-        checkLastName(userForm);
-        checkPassword(userForm);
+    private void checkUserForm(UserForm userForm) throws  UserExistsException, NicknameNotValidException {
         checkNickName(userForm);
-        checkUserLocation(userForm);
-
+        checkEmail(userForm);
+        //checkUserLocation(userForm);
     }
 
-    private void checkNickName(UserForm userForm) throws UserMissingParameterException, NicknameNotValidException {
-        if (userForm.getNickname().equals(""))
-            throw new UserMissingParameterException("Missing parameter nickname");
+    private void checkNickName(UserForm userForm) throws NicknameNotValidException {
         if(userRepository.findAllByNickname(userForm.getNickname()).size() > 0 )
-            throw new NicknameNotValidException("Nickname already exists!");
+            throw new NicknameNotValidException(userForm.getNickname());
     }
 
-    private void checkPassword(UserForm userForm) throws UserMissingParameterException, UserParameterOutOfBoundException, PasswordNotValidException {
-        if (userForm.getPassword().equals(""))
-            throw new UserMissingParameterException("Missing parameter password");
-        if(userForm.getPassword().length() > 120 || userForm.getPassword().length() < 8)
-            throw new UserParameterOutOfBoundException("Password must to be between 8 and 120 characters");
-        if(isValidPassword(userForm.getPassword()) == false)
-            throw new PasswordNotValidException("Password must hav minimum 1 char, 1 digit and 1 specital character");
-    }
 
-    private void checkLastName(UserForm userForm) throws UserMissingParameterException, UserParameterOutOfBoundException {
-        if (userForm.getLastName().equals(""))
-            throw new UserMissingParameterException("Missing parameter last name");
-        if(userForm.getLastName().length() > 20)
-            throw new UserParameterOutOfBoundException("Last name must to be smaller than 20 characters");
-    }
-
-    private void checkFirstName(UserForm userForm) throws UserMissingParameterException, UserParameterOutOfBoundException {
-        if (userForm.getFirstName().equals(""))
-            throw new UserMissingParameterException("Missing parameter first name");
-        if(userForm.getFirstName().length() > 20)
-            throw new UserParameterOutOfBoundException("First name must to be smaller than 20 characters");
-    }
-
-    private void checkEmail(UserForm userForm) throws UserMissingParameterException, UserExistsException, EmailNotValidException {
-        if (userForm.getEmail().equals(""))
-            throw new UserMissingParameterException("Missing parameter email");
+    private void checkEmail(UserForm userForm) throws  UserExistsException {
         if(userRepository.findByEmail(userForm.getEmail()) != null)
-            throw new UserExistsException("User already exists");
-        if (isValidEmail(userForm.getEmail()) == false)
-            throw new EmailNotValidException("Email not valid");
+            throw new UserExistsException(userForm.getEmail());
     }
 
-    private void checkUserLocation(UserForm userForm) throws UserMissingParameterException, LocationMissingParameterException, LocationParameterOutOfBoundException {
-        if (userForm.getLocation() == null)
-            throw new UserMissingParameterException("Missing parameter location");
-        {
-            if (userForm.getLocation().getCity().equals(""))
-                throw new LocationMissingParameterException("Missing parameter city");
-            if(userForm.getLocation().getCity().length() > 120)
-                throw new LocationParameterOutOfBoundException("City must to be smaller than 120 characters");
-            if (userForm.getLocation().getCountry().equals(""))
-                throw new LocationMissingParameterException("Missing parameter country");
-            if (userForm.getLocation().getCountry().length() > 120)
-                throw new LocationParameterOutOfBoundException("Country must to be smaller than 120 characters");
-            if (userForm.getLocation().getLatitude().equals(""))
-                throw new LocationMissingParameterException("Missing parameter latitude");
-            if(userForm.getLocation().getLongitude() > 180 || userForm.getLocation().getLongitude()<-180)
-                throw new LocationParameterOutOfBoundException("Longitude value must to be between -180 and 180!");
-            if (userForm.getLocation().getLongitude().equals(""))
-                throw new LocationMissingParameterException("Missing parameter longitude");
-            if(userForm.getLocation().getLatitude() > 90 || userForm.getLocation().getLatitude() < -90)
-                throw new LocationParameterOutOfBoundException("Latitude value must to be between -90 and 90!");
-        }
-    }
+//    private void checkUserLocation(UserForm userForm) throws UserMissingParameterException, LocationMissingParameterException, LocationParameterOutOfBoundException {
+//        if (userForm.getLocation() == null)
+//            throw new UserMissingParameterException("Missing parameter location");
+//        {
+//            if (userForm.getLocation().getCity().equals(""))
+//                throw new LocationMissingParameterException("Missing parameter city");
+//            if(userForm.getLocation().getCity().length() > 120)
+//                throw new LocationParameterOutOfBoundException("City must to be smaller than 120 characters");
+//            if (userForm.getLocation().getCountry().equals(""))
+//                throw new LocationMissingParameterException("Missing parameter country");
+//            if (userForm.getLocation().getCountry().length() > 120)
+//                throw new LocationParameterOutOfBoundException("Country must to be smaller than 120 characters");
+//            if (userForm.getLocation().getLatitude().equals(""))
+//                throw new LocationMissingParameterException("Missing parameter latitude");
+//            if(userForm.getLocation().getLongitude() > 180 || userForm.getLocation().getLongitude()<-180)
+//                throw new LocationParameterOutOfBoundException("Longitude value must to be between -180 and 180!");
+//            if (userForm.getLocation().getLongitude().equals(""))
+//                throw new LocationMissingParameterException("Missing parameter longitude");
+//            if(userForm.getLocation().getLatitude() > 90 || userForm.getLocation().getLatitude() < -90)
+//                throw new LocationParameterOutOfBoundException("Latitude value must to be between -90 and 90!");
+//        }
+//    }
 
-    private boolean isValidEmail(String email) {
-        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-        return email.matches(regex);
-    }
 
-    private boolean isValidPassword(String pass){
-        String regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-        return pass.matches(regexp);
-    }
-
-    public User createUser(@Valid UserForm userForm, Principal principal) throws UserMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationMissingParameterException, UserExistsException, NicknameNotValidException, LocationParameterOutOfBoundException, UserParameterOutOfBoundException {
-
-        System.out.println(principal.getName());
+    public User createUser(UserForm userForm) throws UserMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationMissingParameterException, UserExistsException, NicknameNotValidException, LocationParameterOutOfBoundException, UserParameterOutOfBoundException {
 
         User user = new User();
         Location location = new Location();
@@ -156,7 +107,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public User updateUser(@Valid UserForm userForm, Long id) throws UserNotFoundException, UserMissingParameterException, LocationMissingParameterException, EmailNotValidException, PasswordNotValidException, UserParameterOutOfBoundException, LocationParameterOutOfBoundException, NicknameNotValidException {
+    public User updateUser( UserForm userForm, Long id) throws UserNotFoundException, NicknameNotValidException {
 
         Optional<User> user = userRepository.findById(id);
         User actualUser = user.get();
@@ -165,24 +116,21 @@ public class UserService implements UserDetailsService {
             throw new UserNotFoundException("The user you searched for is not found!");
 
         if(userForm.getPassword() != null){
-            checkPassword(userForm);
             actualUser.setPassword(userForm.getPassword());
         }
 
         if(userForm.getLastName() != null){
-            checkLastName(userForm);
             actualUser.setLastName(userForm.getLastName());
         }
 
         if(userForm.getFirstName() != null){
-            checkFirstName(userForm);
             actualUser.setFirstName(userForm.getFirstName());
         }
 
         if(userForm.getLocation() != null){
-            checkUserLocation(userForm);
             actualUser.setLocation(userForm.getLocation());
         }
+
         locationRepository.save(actualUser.getLocation());
 
         if(userForm.getUsername() != null){

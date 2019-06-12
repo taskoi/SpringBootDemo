@@ -34,50 +34,9 @@ public class PostService {
     @Autowired
     UserService userService;
 
-    private void checkPostForm(PostForm postForm) throws PostMissingParameterException, PostParameterOutOfBoundException, LocationMissingParameterException, LocationParameterOutOfBoundException {
-        checkTitle(postForm);
-        checkDescription(postForm);
-        checkPostLocation(postForm);
-    }
-    private void checkPostLocation(PostForm postForm) throws PostMissingParameterException, LocationMissingParameterException, LocationParameterOutOfBoundException {
-        if (postForm.getLocation() == null)
-            throw new PostMissingParameterException("Missing parameter location");
-        {
-            if (postForm.getLocation().getCity().equals(""))
-                throw new LocationMissingParameterException("Missing parameter city");
-            if(postForm.getLocation().getCity().length() > 120)
-                throw new LocationParameterOutOfBoundException("City must to be smaller than 120 characters");
-            if (postForm.getLocation().getCountry().equals(""))
-                throw new LocationMissingParameterException("Missing parameter country");
-            if (postForm.getLocation().getCountry().length() > 120)
-                throw new LocationParameterOutOfBoundException("Country must to be smaller than 120 characters");
-            if (postForm.getLocation().getLatitude().equals(""))
-                throw new LocationMissingParameterException("Missing parameter latitude");
-            if(postForm.getLocation().getLongitude() > 180 || postForm.getLocation().getLongitude()<-180)
-                throw new LocationParameterOutOfBoundException("Longitude value must to be between -180 and 180!");
-            if (postForm.getLocation().getLongitude().equals(""))
-                throw new LocationMissingParameterException("Missing parameter longitude");
-            if(postForm.getLocation().getLatitude() > 90 || postForm.getLocation().getLatitude() < -90)
-                throw new LocationParameterOutOfBoundException("Latitude value must to be between -90 and 90!");
-        }
-    }
 
-    private void checkDescription(PostForm postForm) throws PostMissingParameterException, PostParameterOutOfBoundException {
-        if(postForm.getDescription().equals(""))
-            throw new PostMissingParameterException("Missing parameter description");
-        if(postForm.getDescription().length() > 1000)
-            throw new PostParameterOutOfBoundException("Description must to be smaller than 1000 characters");
-    }
 
-    private void checkTitle(PostForm postForm) throws PostMissingParameterException, PostParameterOutOfBoundException {
-        if(postForm.getTitle().equals(""))
-            throw new PostMissingParameterException("Missing parameter title");
-        if(postForm.getTitle().length() > 120)
-            throw new PostParameterOutOfBoundException("Title must to be smaller than 120 characters");
-    }
-    public PostResponse createPost(PostForm postForm) throws PostMissingParameterException, PostParameterOutOfBoundException, LocationMissingParameterException, LocationParameterOutOfBoundException {
-
-        checkPostForm(postForm);
+    public PostResponse createPost(PostForm postForm){
 
         Optional<User> user = userRepository.findById(postForm.getUser().getId());
         User actualUser = user.get();

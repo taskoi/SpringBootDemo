@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,22 +20,26 @@ public class Location implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "longitude", nullable = false)
-    @Min(-180)
-    @Max(180)
+    @Column(name = "longitude")
+    @Min(value = -180 , message = "minimum value on longitude is -180")
+    @Max(value = 180, message = "maximum value on longitude is 180")
+    @NotNull(message = "longitude cannot be null")
     private Float longitude;
 
-    @Column(name = "latitude", nullable = false)
-    @Min(-90)
-    @Max(90)
+    @Column(name = "latitude")
+    @Min(value = -90,message = "minimum value on latitude is -90")
+    @Max(value = 90,message = "maximum value on latitude is 90")
+    @NotNull(message = "latitude cannot be null")
     private Float latitude;
 
-    @Column(name = "city", nullable = false)
-    @Size(max = 120)
+    @Column(name = "city")
+    @Size(max = 120, message = "maximum characters are 120")
+    @NotNull(message = "city cannot be null")
     private String city;
 
-    @Column(name = "country", nullable = false)
-    @Size(max = 120)
+    @Column(name = "country")
+    @Size(max = 120, message = "maximum characters are 120")
+    @NotNull(message = "country cannot be null")
     private String country;
 
     @OneToMany(mappedBy = "location")
