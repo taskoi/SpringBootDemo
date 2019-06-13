@@ -1,22 +1,20 @@
 package com.webfactory.springbootdemo.demoproject.exeptions.exception.response;
 
-import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostMissingParameterException;
+
 import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostNotFoundException;
-import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostParameterOutOfBoundException;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import java.util.Date;
 
@@ -87,8 +85,16 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @Override
+    protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),ex.getMessage(),request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),ex.getBindingResult().getFieldError().getDefaultMessage(),request.getDescription(false));
         return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
     }
+
+
 }

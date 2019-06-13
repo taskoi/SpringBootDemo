@@ -41,7 +41,6 @@ public class UserController {
     @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findAll")
     public List<User> findAll() throws UserNotFoundException {
-        System.out.println("findAll");
         return userService.findAll();
     }
 

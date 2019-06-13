@@ -61,6 +61,13 @@ public class Location implements Serializable {
         this.locationPostsList = locationPostsList;
     }
 
+    public Location(@Min(value = -180, message = "minimum value on longitude is -180") @Max(value = 180, message = "maximum value on longitude is 180") @NotNull(message = "longitude cannot be null") Float longitude, @Min(value = -90, message = "minimum value on latitude is -90") @Max(value = 90, message = "maximum value on latitude is 90") @NotNull(message = "latitude cannot be null") Float latitude, @Size(max = 120, message = "maximum characters are 120") @NotNull(message = "city cannot be null") String city, @Size(max = 120, message = "maximum characters are 120") @NotNull(message = "country cannot be null") String country) {
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.city = city;
+        this.country = country;
+    }
+
     public Long getId() {
         return id;
     }

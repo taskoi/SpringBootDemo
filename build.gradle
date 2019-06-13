@@ -39,6 +39,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
 
+    // https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path
+    compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.0.0'
+
     runtime 'org.springframework.boot:spring-boot-devtools:2.1.4.RELEASE'
     testCompile 'org.springframework.boot:spring-boot-starter-test:2.1.4.RELEASE'
     
