@@ -31,20 +31,29 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
-    // https://mvnrepository.com/artifact/junit/junit
+
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.5.RELEASE'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
 
     // https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path
     compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.0.0'
 
+    // https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path-assert
+    testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.2.0'
+
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.3.2'
+
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
+
     runtime 'org.springframework.boot:spring-boot-devtools:2.1.4.RELEASE'
     testCompile 'org.springframework.boot:spring-boot-starter-test:2.1.4.RELEASE'
-    
+    testCompile("org.assertj:assertj-core:3.11.1")
+
 }
 
 group = 'com.webfactory.spring-boot-demo'

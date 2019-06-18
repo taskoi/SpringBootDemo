@@ -37,7 +37,6 @@ public class UserService implements UserDetailsService {
     private void checkUserForm(UserForm userForm) throws  UserExistsException, NicknameNotValidException {
         checkNickName(userForm);
         checkEmail(userForm);
-        //checkUserLocation(userForm);
     }
 
     private void checkNickName(UserForm userForm) throws NicknameNotValidException {
@@ -51,31 +50,7 @@ public class UserService implements UserDetailsService {
             throw new UserExistsException(userForm.getEmail());
     }
 
-//    private void checkUserLocation(UserForm userForm) throws UserMissingParameterException, LocationMissingParameterException, LocationParameterOutOfBoundException {
-//        if (userForm.getLocation() == null)
-//            throw new UserMissingParameterException("Missing parameter location");
-//        {
-//            if (userForm.getLocation().getCity().equals(""))
-//                throw new LocationMissingParameterException("Missing parameter city");
-//            if(userForm.getLocation().getCity().length() > 120)
-//                throw new LocationParameterOutOfBoundException("City must to be smaller than 120 characters");
-//            if (userForm.getLocation().getCountry().equals(""))
-//                throw new LocationMissingParameterException("Missing parameter country");
-//            if (userForm.getLocation().getCountry().length() > 120)
-//                throw new LocationParameterOutOfBoundException("Country must to be smaller than 120 characters");
-//            if (userForm.getLocation().getLatitude().equals(""))
-//                throw new LocationMissingParameterException("Missing parameter latitude");
-//            if(userForm.getLocation().getLongitude() > 180 || userForm.getLocation().getLongitude()<-180)
-//                throw new LocationParameterOutOfBoundException("Longitude value must to be between -180 and 180!");
-//            if (userForm.getLocation().getLongitude().equals(""))
-//                throw new LocationMissingParameterException("Missing parameter longitude");
-//            if(userForm.getLocation().getLatitude() > 90 || userForm.getLocation().getLatitude() < -90)
-//                throw new LocationParameterOutOfBoundException("Latitude value must to be between -90 and 90!");
-//        }
-//    }
-
-
-    public User createUser(UserForm userForm) throws UserMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationMissingParameterException, UserExistsException, NicknameNotValidException, LocationParameterOutOfBoundException, UserParameterOutOfBoundException {
+    public User createUser(UserForm userForm) throws  UserExistsException, NicknameNotValidException{
 
         User user = new User();
         Location location = new Location();
@@ -142,9 +117,13 @@ public class UserService implements UserDetailsService {
             actualUser.setNickname(userForm.getNickname());
         }
 
+        //change was done because in testing was throwing UnsuportedOperationException
+        //because i was returing fixed size of an array
         if (userForm.getRoles() != null) {
             for (Role r : userForm.getRoles()) {
-                actualUser.getRoles().add(r);
+                List<Role> userRoles = new LinkedList<>(actualUser.getRoles());
+                userRoles.add(r);
+                actualUser.setRoles(userRoles);
                 roleRepository.save(r);
             }
         }
@@ -171,7 +150,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void deleteUser(Long id) throws UserNotFoundException {
-        if(!userRepository.findById(id).isPresent())
+        if(userRepository.findById(id).isPresent())
             userRepository.deleteById(id);
         else
             throw new UserNotFoundException("User with that id does not exist");
@@ -196,7 +175,7 @@ public class UserService implements UserDetailsService {
             return all;
     }
 
-    public List<User> findByUsername(String username) {
+    public List<User> findAllByUsername(String username) {
         List<User> all = userRepository.findAllByUsername(username);
         return all;
     }
@@ -213,7 +192,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserById(Long id) throws UserMissingParameterException {
         Optional<User> user = userRepository.findById(id);
-        if (user == null)
+        if (user.isPresent())
             throw new UserMissingParameterException("User not found");
         else
             return new UserDetailsImpl(user.get());
