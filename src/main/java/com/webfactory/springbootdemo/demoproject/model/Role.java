@@ -19,7 +19,7 @@ public class Role {
 
     private String role;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<User> users = new ArrayList<>();
 
     public Role() {

@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.security.Principal;
@@ -34,6 +35,24 @@ public class UserService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+//home config
+//    @PostConstruct
+//    public void initUser(){
+//        User user = new User();
+//        Location location = new Location((float)22,(float)33,"Skopje","Makedonija");
+//        Role role = new Role("USER");
+//        user.setUsername("tasko");
+//        user.setRoles(Arrays.asList(role));
+//        user.setLocation(location);
+//        user.setPassword(passwordEncoder.encode("Password123!@#"));
+//        user.setNickname("tasko");
+//        user.setLastName("Tasevski");
+//        user.setFirstName("Ivan");
+//        user.setEmail("tivan997@hotmail.com");
+//
+//        locationRepository.save(location);
+//        userRepository.save(user);
+//    }
     private void checkUserForm(UserForm userForm) throws UserExistsException, NicknameNotValidException {
         checkNickName(userForm);
         checkEmail(userForm);
