@@ -10,11 +10,8 @@ import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
-import com.webfactory.springbootdemo.demoproject.web.UserController;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.*;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -22,11 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.*;
 
@@ -41,9 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserServiceTest {
 
     // ...
-    @Autowired
-    MockMvc mockMvc;
-
     @Mock
     UserRepository userRepository;
 
@@ -62,7 +53,6 @@ public class UserServiceTest {
     @BeforeAll
     public void init() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(userService).build();
     }
 
 
@@ -246,7 +236,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void NicknameNotValidExceptionTest() {
+    public void createUserNicknameNotValidExceptionTest() {
         User user1 = new User("tivan997@hotmail.com", "ivan1", "Password012301!@#", "nicknam", "ivan", "tase", new Location((float) 22, (float) 33, "skopje", "makeconija"), Arrays.asList(new Role("USER")));
         List<User> all = new ArrayList<>(Arrays.asList(user1));
 
@@ -276,6 +266,8 @@ public class UserServiceTest {
             }
         });
 
+        System.out.println(exception.getMessage());
+
         assertThat(exception).hasMessageContaining(userForm.getNickname());
         assertTrue(exception.getMessage().contains(userForm.getNickname()));
         assertThatExceptionOfType(NicknameNotValidException.class)
@@ -285,7 +277,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void UserExistsExceptionTest (){
+    public void createUserExistsExceptionTest (){
         User user1 = new User("tivan997@hotmail.com", "ivan1", "Password012301!@#", "nicknam", "ivan", "tase", new Location((float) 22, (float) 33, "skopje", "makeconija"), Arrays.asList(new Role("USER")));
 
         Mockito.when(userRepository.findByEmail(Mockito.anyString())).thenReturn(user1);
@@ -313,6 +305,8 @@ public class UserServiceTest {
                 userService.createUser(userForm);
             }
         });
+
+        System.out.println(exception.getMessage());
 
         assertThat(exception).hasMessageContaining(userForm.getEmail());
         assertThatExceptionOfType(UserExistsException.class)
@@ -351,6 +345,153 @@ public class UserServiceTest {
         assertThat(exception).hasMessageContaining("User with that id does not exist");
     }
 
+    @Test
+    public void updateUserThrowsUserNotFoundTest(){
+        UserForm userForm = new UserForm();
+        Location location = new Location();
+        location.setCountry("Macedonia");
+        location.setCity("Skopje");
+        location.setLatitude((float) 22);
+        location.setLongitude((float) 33);
+        userForm.setLocation(location);
+        userForm.setNickname("nicknam");
+        userForm.setUsername("tasko0");
+        userForm.setFirstName("ivan");
+        userForm.setLastName("tasevski");
+        userForm.setEmail("tivan997@hotmail.com");
+        userForm.setPassword("PASdas12312!@#");
+        Role role = new Role();
+        role.setRole("USER");
+        userForm.setRoles(Collections.singletonList(role));
+
+        User user1 = new User("tivan997@hotmail.com", "ivan1", "Password012301!@#", "nicknam", "ivan", "tase", new Location((float) 22, (float) 33, "skopje", "makeconija"), Arrays.asList(new Role("USER")));
+
+        //Mockito.when(userRepository.findById(1L)).thenReturn(null);
+
+        Exception exception = assertThrows(UserNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                userService.updateUser(userForm,1L);
+            }
+        });
+
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(() -> {
+                    throw new UserNotFoundException("The user you searched for is not found!");
+                }).withMessageContaining("user you searched for");
+
+        System.out.println(exception.getMessage());
+    }
+
+    @Test
+    public void findAllUserNotFoundExceptionTest(){
+        //Mockito.when(userRepository.findAll()).thenReturn(null);
+
+        Exception exception = assertThrows(UserNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                userService.findAll();
+            }
+        });
+
+        System.out.println(exception.getMessage());
+
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(() -> {throw new UserNotFoundException("There are no users!");})
+                .withMessageContaining("no users");
+    }
+
+    @Test
+    public void findByIdUserNotFoundExceptionTest(){
+        Exception exception = assertThrows(UserNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                userService.findById(1L);
+            }
+        });
+
+        System.out.println(exception.getMessage());
+
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(() -> {throw new UserNotFoundException("User with that id does not exist");})
+                .withMessageContaining("with that");
+    }
+
+    @Test
+    public void deleteUserUserNotFoundExceptionTest(){
+        Exception exception = assertThrows(UserNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                userService.deleteUser(1L);
+            }
+        });
+
+        System.out.println(exception.getMessage());
+
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(() -> {throw new UserNotFoundException("User with that id does not exist");})
+                .withMessageContaining("that id does not exist");
+    }
+
+    @Test
+    public void findByNicknameUserNotFoundExceptionTest(){
+        final String nickname = "TestNickname";
+
+        Exception exception = assertThrows(UserNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                userService.findByNickname(nickname);
+            }
+        });
+
+        System.out.println(exception.getMessage());
+
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(() -> {throw new UserNotFoundException(nickname);})
+                .withMessageContaining(nickname);
+    }
+
+    @Test
+    public void findByLocationCityUserNotFoundExceptionTest(){
+        Exception exception = assertThrows(UserNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                userService.findByLocationCity("city");
+            }
+        });
+
+        System.out.println(exception.getMessage());
+
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(() -> {throw new UserNotFoundException("There are no users with that location city");})
+                .withMessageContaining("location");
+    }
+
+    @Test
+    public void findAllByUsernameUsernameNotFoundExceptionTest(){
+        Exception exception = assertThrows(UsernameNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                userService.findAllByUsername("username");
+            }
+        });
+
+        System.out.println(exception.getMessage());
+
+        assertThatExceptionOfType(UsernameNotFoundException.class)
+                .isThrownBy(() -> {throw new UsernameNotFoundException("There are no users with that username");})
+                .withMessageContaining("no users");
+    }
+
+//    @Test
+//    public void loadUserByUsernameUsernameNotFoundExceptionTest(){
+//        Exception exception = assertThrows(UsernameNotFoundException.class, new Executable() {
+//            @Override
+//            public void execute() throws Throwable {
+//                u
+//            }
+//        })
+//    }
 }
 
 

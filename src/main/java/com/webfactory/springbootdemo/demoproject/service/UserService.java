@@ -34,23 +34,23 @@ public class UserService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    private void checkUserForm(UserForm userForm) throws  UserExistsException, NicknameNotValidException {
+    private void checkUserForm(UserForm userForm) throws UserExistsException, NicknameNotValidException {
         checkNickName(userForm);
         checkEmail(userForm);
     }
 
     private void checkNickName(UserForm userForm) throws NicknameNotValidException {
-        if(userRepository.findAllByNickname(userForm.getNickname()).size() > 0 )
+        if (userRepository.findAllByNickname(userForm.getNickname()).size() > 0)
             throw new NicknameNotValidException(userForm.getNickname());
     }
 
 
-    private void checkEmail(UserForm userForm) throws  UserExistsException {
-        if(userRepository.findByEmail(userForm.getEmail()) != null)
+    private void checkEmail(UserForm userForm) throws UserExistsException {
+        if (userRepository.findByEmail(userForm.getEmail()) != null)
             throw new UserExistsException(userForm.getEmail());
     }
 
-    public User createUser(UserForm userForm) throws  UserExistsException, NicknameNotValidException{
+    public User createUser(UserForm userForm) throws UserExistsException, NicknameNotValidException {
 
         User user = new User();
         Location location = new Location();
@@ -82,37 +82,39 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public User updateUser( UserForm userForm, Long id) throws UserNotFoundException, NicknameNotValidException {
+    public User updateUser(UserForm userForm, Long id) throws UserNotFoundException, NicknameNotValidException {
 
         Optional<User> user = userRepository.findById(id);
-        User actualUser = user.get();
+        User actualUser;
 
-        if (actualUser == null)
-            throw new UserNotFoundException("The user you searched for is not found!");
+        if (user.isPresent())
+            actualUser = user.get();
+        else
+            throw new UserNotFoundException(userForm.getNickname());
 
-        if(userForm.getPassword() != null){
+        if (userForm.getPassword() != null) {
             actualUser.setPassword(userForm.getPassword());
         }
 
-        if(userForm.getLastName() != null){
+        if (userForm.getLastName() != null) {
             actualUser.setLastName(userForm.getLastName());
         }
 
-        if(userForm.getFirstName() != null){
+        if (userForm.getFirstName() != null) {
             actualUser.setFirstName(userForm.getFirstName());
         }
 
-        if(userForm.getLocation() != null){
+        if (userForm.getLocation() != null) {
             actualUser.setLocation(userForm.getLocation());
         }
 
         locationRepository.save(actualUser.getLocation());
 
-        if(userForm.getUsername() != null){
+        if (userForm.getUsername() != null) {
             actualUser.setUsername(userForm.getUsername());
         }
 
-        if(userForm.getNickname() != null){
+        if (userForm.getNickname() != null) {
             checkNickName(userForm);
             actualUser.setNickname(userForm.getNickname());
         }
@@ -133,24 +135,23 @@ public class UserService implements UserDetailsService {
 
     public List<User> findAll() throws UserNotFoundException {
         List<User> all = userRepository.findAll();
-        if(all.size() == 0){
+        if (all.size() == 0) {
             throw new UserNotFoundException("There are no users!");
-        }
-        else {
+        } else {
             return userRepository.findAll();
         }
     }
 
     public Optional<User> findById(Long id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
-        if(user.isPresent())
+        if (user.isPresent())
             return user;
         else
             throw new UserNotFoundException("User with that id does not exist");
     }
 
     public void deleteUser(Long id) throws UserNotFoundException {
-        if(userRepository.findById(id).isPresent())
+        if (userRepository.findById(id).isPresent())
             userRepository.deleteById(id);
         else
             throw new UserNotFoundException("User with that id does not exist");
@@ -158,7 +159,7 @@ public class UserService implements UserDetailsService {
 
     public List<User> findByNickname(String nickname) throws UserNotFoundException {
         List<User> all = userRepository.findAllByNickname(nickname);
-        if(all.size()==0){
+        if (all.size() == 0) {
             throw new UserNotFoundException("There are no users with that username");
         }
         //all.stream().filter(user -> user.getNickname().equals(nickname)).collect(Collectors.toList());
@@ -167,17 +168,20 @@ public class UserService implements UserDetailsService {
 
     public List<User> findByLocationCity(String city) throws UserNotFoundException {
         List<User> all = userRepository.findAllByLocationCityContaining(city);
-        if(all.size() == 0){
+        if (all.size() == 0) {
             throw new UserNotFoundException("There are no users with that location city");
         }
-      //  all.stream().filter(user -> user.getLocation().getCity().equals(city)).collect(Collectors.toList());
+        //  all.stream().filter(user -> user.getLocation().getCity().equals(city)).collect(Collectors.toList());
         else
             return all;
     }
 
     public List<User> findAllByUsername(String username) {
         List<User> all = userRepository.findAllByUsername(username);
-        return all;
+        if (all.size() == 0)
+            throw new UsernameNotFoundException("There are no users with that username");
+        else
+            return all;
     }
 
     @Override
@@ -187,15 +191,6 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         else
             return new UserDetailsImpl(user);
-    }
-
-    @Transactional
-    public UserDetails loadUserById(Long id) throws UserMissingParameterException {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent())
-            throw new UserMissingParameterException("User not found");
-        else
-            return new UserDetailsImpl(user.get());
     }
 }
 

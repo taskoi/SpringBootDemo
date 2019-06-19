@@ -5,7 +5,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 public class UserNotFoundException extends Exception {
-    public UserNotFoundException(String s){
-        super(s);
+    private String nickname;
+
+    public UserNotFoundException(String nickname) {
+        super("User not found: " + nickname);
+        this.nickname = nickname;
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 }
