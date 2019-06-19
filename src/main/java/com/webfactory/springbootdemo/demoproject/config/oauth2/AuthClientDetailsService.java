@@ -23,21 +23,21 @@ public class AuthClientDetailsService implements ClientDetailsService {
     PasswordEncoder passwordEncoder;
 
 //  home config
-    @PostConstruct
-    public void init(){
-        AuthClientDetails clientDetails = new AuthClientDetails();
-        clientDetails.setAccessTokenValidity(12345);
-        clientDetails.setAdditionalInformation("");
-        clientDetails.setClientId("client2");
-        clientDetails.setClientSecret(passwordEncoder.encode("secret2"));
-        clientDetails.setGrantTypes("password");
-        clientDetails.setRedirectUris("");
-        clientDetails.setRefreshTokenValidity(12345);
-        clientDetails.setResources("/api");
-        clientDetails.setScopes("write");
-
-        authClientRepository.save(clientDetails);
-    }
+//    @PostConstruct
+//    public void init(){
+//        AuthClientDetails clientDetails = new AuthClientDetails();
+//        clientDetails.setAccessTokenValidity(12345);
+//        clientDetails.setAdditionalInformation("");
+//        clientDetails.setClientId("client2");
+//        clientDetails.setClientSecret(passwordEncoder.encode("secret2"));
+//        clientDetails.setGrantTypes("password");
+//        clientDetails.setRedirectUris("");
+//        clientDetails.setRefreshTokenValidity(12345);
+//        clientDetails.setResources("/api");
+//        clientDetails.setScopes("write");
+//
+//        authClientRepository.save(clientDetails);
+//    }
     @Override
     public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
         AuthClientDetails authClientDetails = authClientRepository.findByClientId(clientId);
