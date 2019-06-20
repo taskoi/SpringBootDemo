@@ -157,7 +157,7 @@ public class UserService implements UserDetailsService {
         if (all.size() == 0) {
             throw new UserNotFoundException("There are no users!");
         } else {
-            return userRepository.findAll();
+            return all;
         }
     }
 
