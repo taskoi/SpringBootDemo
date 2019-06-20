@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 import java.util.Date;
 
 
@@ -23,26 +24,39 @@ import java.util.Date;
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAll(Exception ex,WebRequest request){
-        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),ex.getLocalizedMessage(),request.getDescription(false));
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getLocalizedMessage(), request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex,WebRequest request){
-        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),ex.getMessage(),request.getDescription(false));
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(PostNotFoundException.class)
-    public ResponseEntity<Object> handlePostNotFoundException(PostNotFoundException ex,WebRequest request){
-        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),ex.getMessage(),request.getDescription(false));
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> handlePostNotFoundException(PostNotFoundException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NicknameNotValidException.class)
+    public ResponseEntity<Object> handleNicknameExistException(NicknameNotValidException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserExistsException.class)
+    public ResponseEntity<Object> handleEmailNotValidException(UserExistsException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),"No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL(),request.getDescription(false));
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.NOT_FOUND);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL(), request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -58,7 +72,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         exceptionResponse.setMessage(builder.toString());
         exceptionResponse.setDetails(request.getDescription(false));
 
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @Override
@@ -75,25 +89,25 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         exceptionResponse.setMessage(builder.toString());
         exceptionResponse.setDetails(request.getDescription(false));
 
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.METHOD_NOT_ALLOWED);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getParameterName() + "Parameter is missing",request.getDescription(false));
-        return new ResponseEntity<>(exceptionResponse,new HttpHeaders(),HttpStatus.BAD_REQUEST);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getParameterName() + "Parameter is missing", request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),ex.getMessage(),request.getDescription(false));
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),ex.getBindingResult().getFieldError().getDefaultMessage(),request.getDescription(false));
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getBindingResult().getFieldError().getDefaultMessage(), request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
 
