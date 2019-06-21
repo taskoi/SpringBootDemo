@@ -43,7 +43,7 @@ public class User implements Serializable, UserDetails {
     @Size(max = 20)
     private String lastName;
 
-    @Column(name = "username")
+    @Column(name = "username",unique = true)
     @NotEmpty
     private String username;
 

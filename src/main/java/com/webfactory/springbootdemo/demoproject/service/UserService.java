@@ -101,6 +101,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+
     public User updateUser(UserForm userForm, Long id) throws UserNotFoundException, NicknameNotValidException {
 
         Optional<User> user = userRepository.findById(id);

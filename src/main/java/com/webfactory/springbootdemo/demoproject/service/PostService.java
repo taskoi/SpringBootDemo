@@ -3,6 +3,7 @@ package com.webfactory.springbootdemo.demoproject.service;
 import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostMissingParameterException;
 import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostNotFoundException;
 import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostParameterOutOfBoundException;
+import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.UserIsNotOwnerException;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.LocationMissingParameterException;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.LocationParameterOutOfBoundException;
 import com.webfactory.springbootdemo.demoproject.model.*;
@@ -75,25 +76,29 @@ public class PostService {
         return postResponse;
     }
 
-    public Post updatePost(Long id, PostModify postModify, Principal principal) throws PostNotFoundException {
-        String principal1 = principal.getName();
-        System.out.println(principal1);
+    public Post updatePost(Long id, PostModify postModify, Principal principal) throws PostNotFoundException, UserIsNotOwnerException {
+        //principal name is actually users username;
+        String principalName = principal.getName();
+        int princi = principal.hashCode();
+        System.out.println("Principal"  + principalName + " " + princi);
 
-        User user = userRepository.findByUsername(principal1);
+        User user = userRepository.findByUsername(principalName);
 
-        System.out.println(user.getEmail());
-
+        System.out.println(user.getId());
 
         Optional<Post> post = postRepository.findById(id);
         if(!post.isPresent())
             throw new PostNotFoundException("Post not found!");
-        Post actualPost = post.get();
-        if (!postModify.getTitle().equals(""))
-            actualPost.setTitle(postModify.getTitle());
-        if (!postModify.getDescription().equals(""))
-            actualPost.setDescription(postModify.getDescription());
+        if(post.get().getUser().getId().equals(user.getId())){
+            Post actualPost = post.get();
+            if (!postModify.getTitle().equals(""))
+                actualPost.setTitle(postModify.getTitle());
+            if (!postModify.getDescription().equals(""))
+                actualPost.setDescription(postModify.getDescription());
 
-        return postRepository.save(actualPost);
+            return postRepository.save(actualPost);
+        }
+        throw new UserIsNotOwnerException(post.get().getId());
     }
 
     public List<Post> findAll() throws PostNotFoundException {

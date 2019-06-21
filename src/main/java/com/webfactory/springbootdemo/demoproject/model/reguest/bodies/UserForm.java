@@ -4,6 +4,7 @@ package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
 import com.webfactory.springbootdemo.demoproject.model.Location;
 import com.webfactory.springbootdemo.demoproject.model.Role;
 
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
