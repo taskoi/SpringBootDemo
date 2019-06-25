@@ -15,11 +15,11 @@ import java.util.Set;
 public class UserForm {
 
     @NotNull(message = "First name cannot be null")
-    @Size(max = 20,message = "First name must to be smaller than 20 characters")
+    @Size(max = 20, message = "First name must to be smaller than 20 characters")
     private String firstName;
 
     @NotNull(message = "Last name cannot be null")
-    @Size(max = 20,message = "Last name must to be smaller than 20 characters")
+    @Size(max = 20, message = "Last name must to be smaller than 20 characters")
     private String lastName;
 
     @NotNull(message = "Nickname cannot be null")
@@ -27,7 +27,7 @@ public class UserForm {
 
     @NotNull(message = "Password cannot be null")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "Password must have minimum 1 char, 1 digit and 1 specital character")
-    @Size(min = 8,max = 120,message = "Password must to be between 8 and 120 characters")
+    @Size(min = 8, max = 120, message = "Password must to be between 8 and 120 characters")
     private String password;
 
     @Email

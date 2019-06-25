@@ -67,7 +67,6 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         builder.append(ex.getContentType());
         builder.append(" media type is not supported. Supported media types are only application/json");
 
-
         exceptionResponse.setTimestamp(new Date());
         exceptionResponse.setMessage(builder.toString());
         exceptionResponse.setDetails(request.getDescription(false));
@@ -84,7 +83,6 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         builder.append(
                 " method is not supported for this request. Supported methods are ");
         ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
-
         exceptionResponse.setTimestamp(new Date());
         exceptionResponse.setMessage(builder.toString());
         exceptionResponse.setDetails(request.getDescription(false));

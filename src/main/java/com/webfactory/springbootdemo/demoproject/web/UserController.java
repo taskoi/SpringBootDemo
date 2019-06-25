@@ -10,12 +10,17 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +31,11 @@ import java.util.Optional;
 @Api(value = "demoproject")
 public class UserController {
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    PostService postService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @ApiOperation(value = "Create an user")
     @ApiResponses(value = {
@@ -40,7 +45,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @PostMapping("/createUser")
-    public User createUser(@Valid @RequestBody UserForm userForm,Principal principal) throws UserMissingParameterException, EmailNotValidException, LocationMissingParameterException, PasswordNotValidException, LocationParameterOutOfBoundException, UserExistsException, UserParameterOutOfBoundException, NicknameNotValidException {
+    public User createUser(@Valid @RequestBody UserForm userForm, Principal principal) throws UserExistsException, NicknameNotValidException {
         return userService.createUser(userForm);
     }
 
@@ -53,7 +58,7 @@ public class UserController {
     })
     @PreAuthorize("#oauth2.hasScope('write')")
     @PatchMapping("/updateUser/{id}")
-    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserForm userForm) throws UserNotFoundException, UserMissingParameterException, LocationMissingParameterException, EmailNotValidException, PasswordNotValidException, LocationParameterOutOfBoundException, NicknameNotValidException, UserParameterOutOfBoundException {
+    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserForm userForm) throws UserNotFoundException, NicknameNotValidException {
         return userService.updateUser(userForm, id);
     }
 
@@ -66,8 +71,8 @@ public class UserController {
     })
     @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findAll")
-    public List<User> findAll() throws UserNotFoundException {
-        return userService.findAll();
+    public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
+        return userService.findAll(pageable);
     }
 
     @ApiOperation(value = "Search for a user by ID")

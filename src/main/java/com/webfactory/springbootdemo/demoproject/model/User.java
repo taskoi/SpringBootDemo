@@ -43,7 +43,7 @@ public class User implements Serializable, UserDetails {
     @Size(max = 20)
     private String lastName;
 
-    @Column(name = "username",unique = true)
+    @Column(name = "username", unique = true)
     @NotEmpty
     private String username;
 
@@ -185,11 +185,5 @@ public class User implements Serializable, UserDetails {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
-
-    //    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-//    }
-
 
 }

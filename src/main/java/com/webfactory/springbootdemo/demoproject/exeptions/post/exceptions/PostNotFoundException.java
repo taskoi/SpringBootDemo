@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 public class PostNotFoundException extends Exception {
-    public PostNotFoundException(String s){
+    public PostNotFoundException(String s) {
         super(s);
     }
 }

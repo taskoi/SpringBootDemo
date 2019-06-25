@@ -12,8 +12,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -22,11 +25,14 @@ import java.util.List;
 @Api(value = "demoproject")
 public class SearchController {
 
-    @Autowired
-    PostService postService;
+    private final PostService postService;
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
+
+    public SearchController(PostService postService, UserService userService) {
+        this.postService = postService;
+        this.userService = userService;
+    }
 
     @ApiOperation(value = "Search users by nickname")
     @ApiResponses(value = {
@@ -37,8 +43,8 @@ public class SearchController {
     })
     @GetMapping("/findUserByNickname/{nickname}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public List<User> findByNickname(@PathVariable String nickname) throws UserNotFoundException {
-        return userService.findByNickname(nickname);
+    public Page<User> findByNickname(@PathVariable String nickname, Pageable pageable) throws UserNotFoundException {
+        return userService.findByNickname(pageable, nickname);
     }
 
     @ApiOperation(value = "Search users by location city")
@@ -50,8 +56,8 @@ public class SearchController {
     })
     @GetMapping("/findUserByLocation/{locationCity}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public List<User> findByLocationCity(@PathVariable String locationCity) throws UserNotFoundException {
-        return userService.findByLocationCity(locationCity);
+    public Page<User> findByLocationCity(@PathVariable String locationCity, Pageable pageable) throws UserNotFoundException {
+        return userService.findByLocationCity(pageable, locationCity);
     }
 
     @ApiOperation(value = "Search posts by post title")
@@ -63,8 +69,8 @@ public class SearchController {
     })
     @GetMapping("/findPostByTitle/{postTitle}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public List<Post> findByTitle(@PathVariable String postTitle) throws PostNotFoundException {
-        return postService.findByTitle(postTitle);
+    public Page<Post> findByTitle(@PathVariable String postTitle, Pageable pageable) throws PostNotFoundException {
+        return postService.findByTitle(postTitle, pageable);
     }
 
     @ApiOperation(value = "Search posts by location")
@@ -76,7 +82,7 @@ public class SearchController {
     })
     @PostMapping("/findPostByLocation")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public List<Post> findByLocation(@RequestBody Location location) throws PostNotFoundException {
-        return postService.findByLocation(location);
+    public Page<Post> findByLocation(@RequestBody Location location, Pageable pageable) throws PostNotFoundException {
+        return postService.findByLocation(location, pageable);
     }
 }

@@ -1,19 +1,12 @@
 package com.webfactory.springbootdemo.demoproject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.webfactory.springbootdemo.demoproject.AbstractTest;
-import com.webfactory.springbootdemo.demoproject.exeptions.exception.response.ExceptionResponse;
 import com.webfactory.springbootdemo.demoproject.model.Location;
-import com.webfactory.springbootdemo.demoproject.model.Post;
 import com.webfactory.springbootdemo.demoproject.model.Role;
 import com.webfactory.springbootdemo.demoproject.model.User;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
-import com.webfactory.springbootdemo.demoproject.service.PostService;
 import com.webfactory.springbootdemo.demoproject.service.UserService;
 import com.webfactory.springbootdemo.demoproject.web.UserController;
-import org.hamcrest.Matchers;
-import org.hibernate.mapping.Collection;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,25 +17,17 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.thymeleaf.spring5.expression.Mvc;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,9 +38,6 @@ public class UserControllerTest extends AbstractTest {
 
     @Mock
     UserService userService;
-
-    @Mock
-    PostService postService;
 
     @InjectMocks
     UserController userController;
@@ -280,7 +262,7 @@ public class UserControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userForm));
 
-        MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
+        MvcResult mvcResult = mockMvc.perform(requestBuilder).andDo(print()).andReturn();
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
         Assert.assertEquals(HttpStatus.OK.value(), mockHttpServletResponse.getStatus());
     }

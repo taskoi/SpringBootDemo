@@ -21,14 +21,14 @@ public class Location implements Serializable {
     private Long id;
 
     @Column(name = "longitude")
-    @Min(value = -180 , message = "minimum value on longitude is -180")
+    @Min(value = -180, message = "minimum value on longitude is -180")
     @Max(value = 180, message = "maximum value on longitude is 180")
     @NotNull(message = "longitude cannot be null")
     private Float longitude;
 
     @Column(name = "latitude")
-    @Min(value = -90,message = "minimum value on latitude is -90")
-    @Max(value = 90,message = "maximum value on latitude is 90")
+    @Min(value = -90, message = "minimum value on latitude is -90")
+    @Max(value = 90, message = "maximum value on latitude is 90")
     @NotNull(message = "latitude cannot be null")
     private Float latitude;
 
@@ -50,7 +50,8 @@ public class Location implements Serializable {
     @JsonIgnore
     private List<Post> locationPostsList = new ArrayList<>();
 
-    public Location(){}
+    public Location() {
+    }
 
     public Location(@Min(-180) @Max(180) Float longitude, @Min(-90) @Max(90) Float latitude, @Size(max = 120) String city, @Size(max = 120) String country, List<User> locationUsers, List<Post> locationPostsList) {
         this.longitude = longitude;

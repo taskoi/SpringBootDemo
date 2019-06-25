@@ -1,32 +1,29 @@
 package com.webfactory.springbootdemo.demoproject.web;
 
-        import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostMissingParameterException;
-        import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostNotFoundException;
-        import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostParameterOutOfBoundException;
-        import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.UserIsNotOwnerException;
-        import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.LocationMissingParameterException;
-        import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.LocationParameterOutOfBoundException;
-        import com.webfactory.springbootdemo.demoproject.model.*;
-        import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostForm;
-        import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify;
-        import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostResponse;
-        import com.webfactory.springbootdemo.demoproject.service.PostService;
-        import com.webfactory.springbootdemo.demoproject.service.UserService;
-        import io.swagger.annotations.Api;
-        import io.swagger.annotations.ApiOperation;
-        import io.swagger.annotations.ApiResponse;
-        import io.swagger.annotations.ApiResponses;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.security.access.prepost.PreAuthorize;
-        import org.springframework.security.oauth2.provider.OAuth2Authentication;
-        import org.springframework.transaction.annotation.Propagation;
-        import org.springframework.transaction.annotation.Transactional;
-        import org.springframework.web.bind.annotation.*;
 
-        import javax.validation.Valid;
-        import java.security.Principal;
-        import java.util.List;
-        import java.util.Optional;
+import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostNotFoundException;
+import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.UserIsNotOwnerException;
+import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.UserNotFoundException;
+import com.webfactory.springbootdemo.demoproject.model.*;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostForm;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostResponse;
+import com.webfactory.springbootdemo.demoproject.service.PostService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.Optional;
 
 @RestController
 @Transactional(propagation = Propagation.REQUIRED)
@@ -34,12 +31,11 @@ package com.webfactory.springbootdemo.demoproject.web;
 @Api(value = "demoproject")
 public class PostController {
 
-    @Autowired
-    PostService postService;
+    private final PostService postService;
 
-    @Autowired
-    UserService userService;
-
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     @ApiOperation(value = "Create a post")
     @ApiResponses(value = {
@@ -50,7 +46,7 @@ public class PostController {
     })
     @PreAuthorize("#oauth2.hasScope('write')")
     @PostMapping("/createPost")
-    public PostResponse createPost(@Valid @RequestBody PostForm postForm, OAuth2Authentication authentication) throws PostMissingParameterException, PostParameterOutOfBoundException, LocationMissingParameterException, LocationParameterOutOfBoundException {
+    public PostResponse createPost(@Valid @RequestBody PostForm postForm, OAuth2Authentication authentication) throws UserNotFoundException {
         return postService.createPost(postForm);
     }
 
@@ -65,7 +61,7 @@ public class PostController {
     @PatchMapping("/updatePost/{id}")
     public Post updatePost(@PathVariable Long id, @RequestBody PostModify postModify, Principal principal) throws PostNotFoundException, UserIsNotOwnerException {
 
-        return postService.updatePost(id, postModify,principal);
+        return postService.updatePost(id, postModify, principal);
     }
 
     @ApiOperation(value = "View a list of all posts")
@@ -77,8 +73,8 @@ public class PostController {
     })
     @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findAllPosts")
-    public List<Post> findAll() throws PostNotFoundException {
-        return postService.findAll();
+    public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {
+        return postService.findAll(pageable);
     }
 
     @ApiOperation(value = "Search for a post by ID")

@@ -1,20 +1,23 @@
 package com.webfactory.springbootdemo.demoproject.service;
 
-import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostMissingParameterException;
+import com.webfactory.springbootdemo.demoproject.events.*;
 import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostNotFoundException;
-import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.PostParameterOutOfBoundException;
 import com.webfactory.springbootdemo.demoproject.exeptions.post.exceptions.UserIsNotOwnerException;
-import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.LocationMissingParameterException;
-import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.LocationParameterOutOfBoundException;
+import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.UserNotFoundException;
 import com.webfactory.springbootdemo.demoproject.model.*;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostForm;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostResponse;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
+import com.webfactory.springbootdemo.demoproject.persistance.LogRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.PostRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.security.Principal;
 import java.util.List;
@@ -23,24 +26,35 @@ import java.util.Optional;
 @Service
 public class PostService {
 
-    @Autowired
+    private final
     PostRepository postRepository;
 
-    @Autowired
+    private final
     UserRepository userRepository;
 
-    @Autowired
+    private final
     LocationRepository locationRepository;
 
-    @Autowired
-    UserService userService;
+    private final
+    ApplicationEventPublisher applicationEventPublisher;
 
+    public PostService(PostRepository postRepository, UserRepository userRepository, LocationRepository locationRepository, ApplicationEventPublisher applicationEventPublisher) {
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
+        this.locationRepository = locationRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
-
-    public PostResponse createPost(PostForm postForm){
+    public PostResponse createPost(PostForm postForm) throws UserNotFoundException {
 
         Optional<User> user = userRepository.findById(postForm.getUser().getId());
-        User actualUser = user.get();
+        User actualUser;
+
+        if (user.isPresent()) {
+            actualUser = user.get();
+        } else {
+            throw new UserNotFoundException(postForm.getUser().getNickname());
+        }
 
         Post post = new Post();
         Location location = new Location();
@@ -65,6 +79,8 @@ public class PostService {
         locationRepository.save(location);
         userRepository.save(actualUser);
 
+        applicationEventPublisher.publishEvent(new CreatePostEvent(this, post, actualUser));
+
         PostResponse postResponse = new PostResponse();
         postResponse.setId(post.getId());
         postResponse.setTitle(postForm.getTitle());
@@ -80,64 +96,79 @@ public class PostService {
         //principal name is actually users username;
         String principalName = principal.getName();
         int princi = principal.hashCode();
-        System.out.println("Principal"  + principalName + " " + princi);
+        System.out.println("Principal" + principalName + " " + princi);
 
         User user = userRepository.findByUsername(principalName);
 
         System.out.println(user.getId());
 
         Optional<Post> post = postRepository.findById(id);
-        if(!post.isPresent())
+        if (!post.isPresent())
             throw new PostNotFoundException("Post not found!");
-        if(post.get().getUser().getId().equals(user.getId())){
+        if (post.get().getUser().getId().equals(user.getId())) {
             Post actualPost = post.get();
             if (!postModify.getTitle().equals(""))
                 actualPost.setTitle(postModify.getTitle());
             if (!postModify.getDescription().equals(""))
                 actualPost.setDescription(postModify.getDescription());
 
+            applicationEventPublisher.publishEvent(new UpdatePostEvent(this, actualPost, user));
+
             return postRepository.save(actualPost);
         }
         throw new UserIsNotOwnerException(post.get().getId());
     }
 
-    public List<Post> findAll() throws PostNotFoundException {
-        List<Post> all = postRepository.findAll();
-        if(all.size() == 0)
+    public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {
+        Page<Post> all = postRepository.findAll(pageable);
+        if (all.getSize() == 0)
             throw new PostNotFoundException("No posts are found!");
-
-        return all;
+        else {
+            List<Post> posts = postRepository.findAll();
+            applicationEventPublisher.publishEvent(new FindAllPostsEvent(this, posts));
+            return all;
+        }
     }
 
     public Optional<Post> findPostById(Long id) throws PostNotFoundException {
-        if(!postRepository.findById(id).isPresent())
+        if (!postRepository.findById(id).isPresent())
             throw new PostNotFoundException("Post not found!");
-        return postRepository.findById(id);
+        else {
+            applicationEventPublisher.publishEvent(new FindPostByIdEvent(this, postRepository.findById(id).get()));
+            return postRepository.findById(id);
+        }
     }
 
     public void deletePost(Long id) throws PostNotFoundException {
-        if(!postRepository.findById(id).isPresent())
+        if (!postRepository.findById(id).isPresent())
             throw new PostNotFoundException("Post you want to delete does not exist!");
-        postRepository.deleteById(id);
+        else {
+            applicationEventPublisher.publishEvent(new DeletePostEvent(this, id));
+            postRepository.deleteById(id);
+        }
     }
 
-    public List<Post> findByTitle(String postTitle) throws PostNotFoundException {
-        List<Post> all = postRepository.findAllByTitle(postTitle);
-//        all.stream().filter(post -> post.getTitle().equals(postTitle)).collect(Collectors.toList());
-//        ;
-        if(all.size() == 0)
+    public Page<Post> findByTitle(String postTitle, Pageable pageable) throws PostNotFoundException {
+        Page<Post> all = postRepository.findAllByTitle(pageable, postTitle);
+
+        if (all.getSize() == 0)
             throw new PostNotFoundException("No posts are found with that title");
-        return all;
+        else {
+            List<Post> posts = postRepository.findAllByTitle(postTitle);
+            applicationEventPublisher.publishEvent(new FindAllPostsByTitle(this, posts));
+            return all;
+        }
     }
 
-    public List<Post> findByLocation(Location location) throws PostNotFoundException {
-        List<Post> all = postRepository.findAllByLocation(location);
-//        all.stream().filter(post -> post.getLocation().getLatitude().equals(location.getLatitude()) &&
-//                post.getLocation().getLongitude().equals(location.getLongitude()) &&
-//                post.getLocation().getCountry().equals(location.getCity()) &&
-//                post.getLocation().getCity().equals(location.getCity())).collect(Collectors.toList());
-        if(all.size() == 0)
+    public Page<Post> findByLocation(Location location, Pageable pageable) throws PostNotFoundException {
+        Page<Post> all = postRepository.findAllByLocation(pageable, location);
+
+        if (all.getSize() == 0)
             throw new PostNotFoundException("No posts are found with that location");
-        return all;
+        else {
+            List<Post> posts = postRepository.findAllByLocation(location);
+            applicationEventPublisher.publishEvent(new FindAllPostsByLocationEvent(this, posts));
+            return all;
+        }
     }
 }

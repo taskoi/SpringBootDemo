@@ -1,41 +1,48 @@
 package com.webfactory.springbootdemo.demoproject.service;
 
+import com.webfactory.springbootdemo.demoproject.events.*;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.*;
 import com.webfactory.springbootdemo.demoproject.model.*;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
+import com.webfactory.springbootdemo.demoproject.persistance.LogRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
-import javax.validation.Valid;
-import java.security.Principal;
+
 import java.util.*;
 
 @Service
 @Transactional
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Autowired
-    LocationRepository locationRepository;
+    public UserService(UserRepository userRepository, LocationRepository locationRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, LogRepository logRepository, ApplicationEventPublisher applicationEventPublisher) {
+        this.userRepository = userRepository;
+        this.locationRepository = locationRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-//home config
+    //home config
 //    @PostConstruct
 //    public void initUser(){
 //        User user = new User();
@@ -59,7 +66,7 @@ public class UserService implements UserDetailsService {
     }
 
     private void checkNickName(UserForm userForm) throws NicknameNotValidException {
-        if (userRepository.findAllByNickname(userForm.getNickname()).size() > 0)
+        if (userRepository.findByNickname(userForm.getNickname()) != null)
             throw new NicknameNotValidException(userForm.getNickname());
     }
 
@@ -96,8 +103,10 @@ public class UserService implements UserDetailsService {
         user.setLocation(location);
         location.getLocationUsers().add(user);
 
-
         locationRepository.save(location);
+
+        applicationEventPublisher.publishEvent(new CreateUserEvent(this, user));
+
         return userRepository.save(user);
     }
 
@@ -150,58 +159,74 @@ public class UserService implements UserDetailsService {
             }
         }
 
+        applicationEventPublisher.publishEvent(new UpdateUserEvent(this, actualUser));
         return userRepository.save(actualUser);
     }
 
-    public List<User> findAll() throws UserNotFoundException {
-        List<User> all = userRepository.findAll();
-        if (all.size() == 0) {
+    public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
+        Page<User> all = userRepository.findAll(pageable);
+        if (all.getSize() == 0) {
             throw new UserNotFoundException("There are no users!");
         } else {
+            List<User> users = userRepository.findAll();
+            applicationEventPublisher.publishEvent(new FindAllUsersEvent(this, users));
             return all;
         }
     }
 
     public Optional<User> findById(Long id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
-        if (user.isPresent())
+        if (user.isPresent()) {
+            applicationEventPublisher.publishEvent(new FindUserByIdEvent(this, user.get()));
+
             return user;
-        else
+        } else
             throw new UserNotFoundException("User with that id does not exist");
     }
 
     public void deleteUser(Long id) throws UserNotFoundException {
-        if (userRepository.findById(id).isPresent())
+        if (userRepository.findById(id).isPresent()) {
+            applicationEventPublisher.publishEvent(new DeleteUserEvent(this, id));
+
             userRepository.deleteById(id);
-        else
+        } else
             throw new UserNotFoundException("User with that id does not exist");
     }
 
-    public List<User> findByNickname(String nickname) throws UserNotFoundException {
-        List<User> all = userRepository.findAllByNickname(nickname);
-        if (all.size() == 0) {
+    public Page<User> findByNickname(Pageable pageable, String nickname) throws UserNotFoundException {
+        Page<User> all = userRepository.findAllByNickname(pageable, nickname);
+        if (all.getSize() == 0) {
             throw new UserNotFoundException("There are no users with that username");
+        } else {
+            List<User> users = userRepository.findAllByNickname(nickname);
+
+            applicationEventPublisher.publishEvent(new FindAllUsersByNicknameEvent(this, users));
+            return all;
         }
-        //all.stream().filter(user -> user.getNickname().equals(nickname)).collect(Collectors.toList());
-        else return all;
     }
 
-    public List<User> findByLocationCity(String city) throws UserNotFoundException {
-        List<User> all = userRepository.findAllByLocationCityContaining(city);
-        if (all.size() == 0) {
+    public Page<User> findByLocationCity(Pageable pageable, String city) throws UserNotFoundException {
+        Page<User> all = userRepository.findAllByLocationCityContaining(pageable, city);
+        if (all.getSize() == 0) {
             throw new UserNotFoundException("There are no users with that location city");
-        }
-        //  all.stream().filter(user -> user.getLocation().getCity().equals(city)).collect(Collectors.toList());
-        else
+        } else {
+            List<User> users = userRepository.findAllByLocationCityContaining(city);
+            applicationEventPublisher.publishEvent(new FindAllUsersByLocationCityEvent(this, users));
+
             return all;
+        }
     }
 
-    public List<User> findAllByUsername(String username) {
-        List<User> all = userRepository.findAllByUsername(username);
-        if (all.size() == 0)
+    public Page<User> findAllByUsername(Pageable pageable, String username) {
+        Page<User> all = userRepository.findAllByUsername(pageable, username);
+        if (all.getSize() == 0)
             throw new UsernameNotFoundException("There are no users with that username");
-        else
+        else {
+            List<User> users = userRepository.findAllByUsername(username);
+            applicationEventPublisher.publishEvent(new FindAllUsersByUsernameEvent(this, users));
+
             return all;
+        }
     }
 
     @Override

@@ -19,15 +19,17 @@ public class Role {
 
     private String role;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<User> users = new ArrayList<>();
 
     public Role() {
 
     }
-    public Role(String r){
+
+    public Role(String r) {
         this.role = r;
     }
+
     public Role(String role, List<User> users) {
         this.role = role;
         this.users = users;
