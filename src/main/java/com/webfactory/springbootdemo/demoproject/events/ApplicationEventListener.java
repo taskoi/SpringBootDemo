@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class ApplicationEventListener {
 
@@ -18,7 +20,7 @@ public class ApplicationEventListener {
     @EventListener(CreateUserEvent.class)
     public void handleCreteUserEvent(CreateUserEvent event) {
         Log log = new Log("Create user method called", "User with email " + event.getUser().getEmail() + " has been created");
-        logRepository.save(log);
+        logRepository.insert(log);
     }
 
     @EventListener(UpdateUserEvent.class)

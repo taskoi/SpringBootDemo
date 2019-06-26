@@ -1,5 +1,7 @@
 package com.webfactory.springbootdemo.demoproject.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.json.JSONObject;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.GeneratedValue;
@@ -8,25 +10,24 @@ import javax.persistence.Id;
 import javax.swing.text.DateFormatter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
-@Document(collection = "log")
+@Document(collection = "show da")
 public class Log {
 
     private String type;
     private String description;
-    private String date;
-
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT, pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date date;
 
     public Log() {
 
     }
 
     public Log(String type, String description) {
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        this.date = simpleDateFormat.format(new Date());
         this.type = type + "method called";
         this.description = "returned result of " + description;
+        this.date = new Date();
     }
 
     public String getType() {
@@ -45,11 +46,11 @@ public class Log {
         this.description = description;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 }
