@@ -9,14 +9,15 @@ import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostForm;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostResponse;
 import com.webfactory.springbootdemo.demoproject.service.PostService;
+import com.webfactory.springbootdemo.demoproject.service.impl.PostServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +31,9 @@ import java.util.Optional;
 @RequestMapping("/api/post")
 @Api(value = "demoproject")
 public class PostController {
-
     private final PostService postService;
 
-    public PostController(PostService postService) {
+    public PostController( PostService postService) {
         this.postService = postService;
     }
 
@@ -46,7 +46,7 @@ public class PostController {
     })
     @PreAuthorize("#oauth2.hasScope('write')")
     @PostMapping("/createPost")
-    public PostResponse createPost(@Valid @RequestBody PostForm postForm, OAuth2Authentication authentication) throws UserNotFoundException {
+    public PostResponse createPost(@Valid @RequestBody PostForm postForm) throws UserNotFoundException {
         return postService.createPost(postForm);
     }
 

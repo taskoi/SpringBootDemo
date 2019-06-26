@@ -6,7 +6,7 @@ import com.webfactory.springbootdemo.demoproject.model.Role;
 import com.webfactory.springbootdemo.demoproject.model.User;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
-import com.webfactory.springbootdemo.demoproject.service.UserService;
+import com.webfactory.springbootdemo.demoproject.service.impl.UserServiceImpl;
 import com.webfactory.springbootdemo.demoproject.web.UserController;
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,7 +45,7 @@ public class UserControllerTest  {
     MockMvc mockMvc;
 
     @Mock
-    UserService userService;
+    UserServiceImpl userServiceImpl;
 
     @Mock
     LocationRepository locationRepository;
@@ -89,7 +89,7 @@ public class UserControllerTest  {
         user.getRoles().add(role);
         user.setEmail("tivan997@hotmail.com");
 
-        Mockito.when(userService.createUser(Mockito.any(UserForm.class))).thenReturn(user);
+        Mockito.when(userServiceImpl.createUser(Mockito.any(UserForm.class))).thenReturn(user);
 
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -123,7 +123,7 @@ public class UserControllerTest  {
         role.setRole("USER");
         userForm.setRoles(Arrays.asList(role));
 
-        Mockito.when(userService.createUser(Mockito.any(UserForm.class))).thenReturn(new User());
+        Mockito.when(userServiceImpl.createUser(Mockito.any(UserForm.class))).thenReturn(new User());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/api/user/createUser")
@@ -398,7 +398,7 @@ public class UserControllerTest  {
     @Test
     public void findUserByIdTest() throws Exception {
         User user = new User("tivan997@hotmail.com", "ivan1", "Password012301!@#", "nicknam", "ivan", "tase", new Location((float) 22, (float) 33, "skopje", "makeconija"), Arrays.asList(new Role("USER")));
-        Mockito.when(userService.findById((long) 1)).thenReturn(java.util.Optional.of(user));
+        Mockito.when(userServiceImpl.findById((long) 1)).thenReturn(java.util.Optional.of(user));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/api/user/findById/{id}", 1);
@@ -410,7 +410,7 @@ public class UserControllerTest  {
 
     @Test
     public void findUserByIdFalseTest() throws Exception {
-        Mockito.when(userService.findById(Mockito.any())).thenReturn(null);
+        Mockito.when(userServiceImpl.findById(Mockito.any())).thenReturn(null);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/user/findById/1");
 
@@ -422,7 +422,7 @@ public class UserControllerTest  {
     @Test
     public void deleteUserTest() throws Exception {
         User user = new User("tivan997@hotmail.com", "ivan1", "Password012301!@#", "nicknam", "ivan", "tase", new Location((float) 22, (float) 33, "skopje", "makeconija"), Arrays.asList(new Role("USER")));
-        Mockito.when(userService.findById((long) 1)).thenReturn(java.util.Optional.of(user));
+        Mockito.when(userServiceImpl.findById((long) 1)).thenReturn(java.util.Optional.of(user));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete("/api/user/deleteUser/1");

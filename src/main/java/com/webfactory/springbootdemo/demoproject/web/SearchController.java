@@ -5,33 +5,29 @@ import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.UserN
 import com.webfactory.springbootdemo.demoproject.model.Location;
 import com.webfactory.springbootdemo.demoproject.model.Post;
 import com.webfactory.springbootdemo.demoproject.model.User;
-import com.webfactory.springbootdemo.demoproject.service.PostService;
-import com.webfactory.springbootdemo.demoproject.service.UserService;
+import com.webfactory.springbootdemo.demoproject.service.impl.PostServiceImpl;
+import com.webfactory.springbootdemo.demoproject.service.impl.UserServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/search")
 @Api(value = "demoproject")
 public class SearchController {
 
-    private final PostService postService;
+    private final PostServiceImpl postServiceImpl;
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
-    public SearchController(PostService postService, UserService userService) {
-        this.postService = postService;
-        this.userService = userService;
+    public SearchController(PostServiceImpl postServiceImpl, UserServiceImpl userServiceImpl) {
+        this.postServiceImpl = postServiceImpl;
+        this.userServiceImpl = userServiceImpl;
     }
 
     @ApiOperation(value = "Search users by nickname")
@@ -44,7 +40,7 @@ public class SearchController {
     @GetMapping("/findUserByNickname/{nickname}")
     @PreAuthorize("#oauth2.hasScope('read')")
     public Page<User> findByNickname(@PathVariable String nickname, Pageable pageable) throws UserNotFoundException {
-        return userService.findByNickname(pageable, nickname);
+        return userServiceImpl.findByNickname(pageable, nickname);
     }
 
     @ApiOperation(value = "Search users by location city")
@@ -57,7 +53,7 @@ public class SearchController {
     @GetMapping("/findUserByLocation/{locationCity}")
     @PreAuthorize("#oauth2.hasScope('read')")
     public Page<User> findByLocationCity(@PathVariable String locationCity, Pageable pageable) throws UserNotFoundException {
-        return userService.findByLocationCity(pageable, locationCity);
+        return userServiceImpl.findByLocationCity(pageable, locationCity);
     }
 
     @ApiOperation(value = "Search posts by post title")
@@ -70,7 +66,7 @@ public class SearchController {
     @GetMapping("/findPostByTitle/{postTitle}")
     @PreAuthorize("#oauth2.hasScope('read')")
     public Page<Post> findByTitle(@PathVariable String postTitle, Pageable pageable) throws PostNotFoundException {
-        return postService.findByTitle(postTitle, pageable);
+        return postServiceImpl.findByTitle(postTitle, pageable);
     }
 
     @ApiOperation(value = "Search posts by location")
@@ -83,6 +79,6 @@ public class SearchController {
     @PostMapping("/findPostByLocation")
     @PreAuthorize("#oauth2.hasScope('read')")
     public Page<Post> findByLocation(@RequestBody Location location, Pageable pageable) throws PostNotFoundException {
-        return postService.findByLocation(location, pageable);
+        return postServiceImpl.findByLocation(location, pageable);
     }
 }

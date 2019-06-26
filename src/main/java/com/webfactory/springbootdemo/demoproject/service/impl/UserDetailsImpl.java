@@ -1,4 +1,4 @@
-package com.webfactory.springbootdemo.demoproject.service;
+package com.webfactory.springbootdemo.demoproject.service.impl;
 
 import com.webfactory.springbootdemo.demoproject.model.Role;
 import com.webfactory.springbootdemo.demoproject.model.User;

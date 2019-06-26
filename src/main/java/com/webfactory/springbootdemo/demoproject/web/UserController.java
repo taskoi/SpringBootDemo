@@ -3,12 +3,12 @@ package com.webfactory.springbootdemo.demoproject.web;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.*;
 import com.webfactory.springbootdemo.demoproject.model.User;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
-import com.webfactory.springbootdemo.demoproject.service.PostService;
 import com.webfactory.springbootdemo.demoproject.service.UserService;
+import com.webfactory.springbootdemo.demoproject.service.impl.UserServiceImpl;
 import io.swagger.annotations.*;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
-
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -42,7 +40,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @PostMapping("/createUser")
-    public User createUser(@Valid @RequestBody UserForm userForm, Principal principal) throws UserExistsException, NicknameNotValidException {
+    public User createUser(@Valid @RequestBody UserForm userForm) throws UserExistsException, NicknameNotValidException {
         return userService.createUser(userForm);
     }
 
