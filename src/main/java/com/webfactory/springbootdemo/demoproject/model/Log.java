@@ -54,5 +54,3 @@ public class Log {
         this.date = date;
     }
 }
-
-// todo: da zacuvash data vo baza

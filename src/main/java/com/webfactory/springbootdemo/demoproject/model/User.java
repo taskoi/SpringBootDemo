@@ -1,6 +1,8 @@
 package com.webfactory.springbootdemo.demoproject.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -142,6 +144,7 @@ public class User implements Serializable, UserDetails {
     }
 
     @Override
+    @ApiModelProperty(hidden = true)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> list = new ArrayList<>();
         for (Role role : getRoles()) {
@@ -159,21 +162,25 @@ public class User implements Serializable, UserDetails {
     }
 
     @Override
+    @ApiModelProperty(hidden = true)
     public boolean isAccountNonExpired() {
         return false;
     }
 
     @Override
+    @ApiModelProperty(hidden = true)
     public boolean isAccountNonLocked() {
         return false;
     }
 
     @Override
+    @ApiModelProperty(hidden = true)
     public boolean isCredentialsNonExpired() {
         return false;
     }
 
     @Override
+    @ApiModelProperty(hidden = true)
     public boolean isEnabled() {
         return false;
     }

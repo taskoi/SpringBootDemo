@@ -5,10 +5,7 @@ import com.webfactory.springbootdemo.demoproject.model.User;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
 import com.webfactory.springbootdemo.demoproject.service.PostService;
 import com.webfactory.springbootdemo.demoproject.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
