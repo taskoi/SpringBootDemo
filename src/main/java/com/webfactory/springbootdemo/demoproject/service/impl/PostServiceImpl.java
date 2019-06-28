@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 
 import java.security.Principal;
@@ -91,31 +92,19 @@ public class PostServiceImpl implements PostService {
         return postResponse;
     }
 
-    public Post updatePost(Long id, PostModify postModify, Principal principal) throws PostNotFoundException, UserIsNotOwnerException {
-        //principal name is actually users username;
-        String principalName = principal.getName();
-        int princi = principal.hashCode();
-        System.out.println("Principal" + principalName + " " + princi);
-
-        User user = userRepository.findByUsername(principalName);
-
-        System.out.println(user.getId());
-
+    public Post updatePost(Long id, PostModify postModify) throws PostNotFoundException, UserIsNotOwnerException {
         Optional<Post> post = postRepository.findById(id);
-        if (!post.isPresent())
-            throw new PostNotFoundException("Post not found!");
-        if (post.get().getUser().getId().equals(user.getId())) {
-            Post actualPost = post.get();
-            if (!postModify.getTitle().equals(""))
-                actualPost.setTitle(postModify.getTitle());
-            if (!postModify.getDescription().equals(""))
-                actualPost.setDescription(postModify.getDescription());
 
-            applicationEventPublisher.publishEvent(new UpdatePostEvent(this, actualPost, user));
-
-            return postRepository.save(actualPost);
+        if (!post.isPresent()) {
+            throw new PostNotFoundException("Post does not exist");
         }
-        throw new UserIsNotOwnerException(post.get().getId());
+        if (postModify.getTitle() != null)
+            post.get().setTitle(postModify.getTitle());
+        if (postModify.getDescription() != null)
+            post.get().setDescription(postModify.getDescription());
+
+        applicationEventPublisher.publishEvent(new CreatePostEvent(this,post.get(),post.get().getUser()));
+        return postRepository.save(post.get());
     }
 
     public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {

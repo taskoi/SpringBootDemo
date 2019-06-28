@@ -162,17 +162,6 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         return userRepository.save(actualUser);
     }
 
-    public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
-        Page<User> all = userRepository.findAll(pageable);
-        if (all.getSize() == 0) {
-            throw new UserNotFoundException("There are no users!");
-        } else {
-            List<User> users = userRepository.findAll();
-            applicationEventPublisher.publishEvent(new FindAllUsersEvent(this, users));
-            return all;
-        }
-    }
-
     public Optional<User> findById(Long id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -192,12 +181,22 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserNotFoundException("User with that id does not exist");
     }
 
+    public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
+        Page<User> all = userRepository.findAll(pageable);
+        if (all.getSize() == 0) {
+            throw new UserNotFoundException("There are no users!");
+        } else {
+            List<User> users = all.getContent();
+            applicationEventPublisher.publishEvent(new FindAllUsersEvent(this, users));
+            return all;
+        }
+    }
     public Page<User> findByNickname(Pageable pageable, String nickname) throws UserNotFoundException {
         Page<User> all = userRepository.findAllByNickname(pageable, nickname);
         if (all.getSize() == 0) {
             throw new UserNotFoundException("There are no users with that username");
         } else {
-            List<User> users = userRepository.findAllByNickname(nickname);
+            List<User> users = all.getContent();
 
             applicationEventPublisher.publishEvent(new FindAllUsersByNicknameEvent(this, users));
             return all;
@@ -209,8 +208,8 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         if (all.getSize() == 0) {
             throw new UserNotFoundException("There are no users with that location city");
         } else {
-            List<User> users = userRepository.findAllByLocationCityContaining(city);
-            applicationEventPublisher.publishEvent(new FindAllUsersByLocationCityEvent(this, users));
+            List<User> list = all.getContent();
+            applicationEventPublisher.publishEvent(new FindAllUsersByLocationCityEvent(this, list));
 
             return all;
         }
@@ -221,7 +220,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         if (all.getSize() == 0)
             throw new UsernameNotFoundException("There are no users with that username");
         else {
-            List<User> users = userRepository.findAllByUsername(username);
+            List<User> users = all.getContent();
             applicationEventPublisher.publishEvent(new FindAllUsersByUsernameEvent(this, users));
 
             return all;

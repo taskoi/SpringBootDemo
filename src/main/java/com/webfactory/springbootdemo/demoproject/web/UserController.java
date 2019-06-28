@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -51,7 +52,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
-    @PreAuthorize("#oauth2.hasScope('write')")
+    @PreAuthorize("@securityService.hasAccess(authentication,#id)")
     @PatchMapping("/updateUser/{id}")
     public User updateUser(@PathVariable Long id, @Valid @RequestBody UserForm userForm) throws UserNotFoundException, NicknameNotValidException {
         return userService.updateUser(userForm, id);

@@ -11,14 +11,13 @@ import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostRespon
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.security.Principal;
 import java.util.Optional;
 
 public interface PostService {
 
     PostResponse createPost(PostForm postForm) throws UserNotFoundException;
 
-    Post updatePost(Long id, PostModify postModify, Principal principal) throws PostNotFoundException, UserIsNotOwnerException;
+    Post updatePost(Long id, PostModify postModify) throws PostNotFoundException, UserIsNotOwnerException;
 
     Page<Post> findAll(Pageable pageable) throws PostNotFoundException;
 

@@ -57,11 +57,11 @@ public class PostController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
-    @PreAuthorize("#oauth2.hasScope('write')")
+    @PreAuthorize("@securityService.hasAccess(authentication,#id)")
     @PatchMapping("/updatePost/{id}")
-    public Post updatePost(@PathVariable Long id, @RequestBody PostModify postModify, Principal principal) throws PostNotFoundException, UserIsNotOwnerException {
+    public Post updatePost(@PathVariable Long id, @RequestBody PostModify postModify) throws PostNotFoundException, UserIsNotOwnerException {
 
-        return postService.updatePost(id, postModify, principal);
+        return postService.updatePost(id, postModify);
     }
 
     @ApiOperation(value = "View a list of all posts")
@@ -98,7 +98,7 @@ public class PostController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @DeleteMapping("/deletePost/{id}")
-    @PreAuthorize("#oauth2.hasScope('write')")
+    @PreAuthorize("@securityService.hasAccess(authentication,#id)")
     public void deletePost(@PathVariable Long id) throws PostNotFoundException {
         postService.deletePost(id);
     }
