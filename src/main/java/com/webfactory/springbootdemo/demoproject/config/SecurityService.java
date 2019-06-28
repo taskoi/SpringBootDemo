@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -26,7 +27,7 @@ public class SecurityService {
         User user = userRepository.findByUsername(username);
         boolean flag = false;
         for (Post post : user.getUserPostsList()) {
-            if (post.getId() == id) {
+            if (post.getUser().getId() == user.getId()) {
                 flag= true;
             }
         }
@@ -34,9 +35,17 @@ public class SecurityService {
     }
 
 
-//    public boolean hasAccessUser(Authentication authentication, Long id ){
-//        String username = authentication.getPrincipal().toString();
-//        User user = userRepository.findById(id);
-//    }
+    public boolean hasAccessUser(Authentication authentication, Long id ){
+        String username = authentication.getPrincipal().toString();
+        Optional<User> user = userRepository.findById(id);
+        boolean flag = false;
+        if(user.isPresent()){
+            User user1 = userRepository.findByUsername(username);
+            if(user1.getId() == user.get().getId()){
+                flag = true;
+            }
+        }
+        return flag;
+    }
 }
 
