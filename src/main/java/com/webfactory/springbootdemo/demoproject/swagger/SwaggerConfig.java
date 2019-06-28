@@ -1,18 +1,30 @@
 package com.webfactory.springbootdemo.demoproject.swagger;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
+import io.swagger.models.Path;
+import io.swagger.models.parameters.PathParameter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
+import springfox.documentation.builders.*;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.spring.web.readers.operation.CachingOperationNameGenerator;
+import springfox.documentation.swagger.web.*;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -21,14 +33,21 @@ import static springfox.documentation.builders.PathSelectors.regex;
 @EnableSwagger2
 public class SwaggerConfig extends WebMvcConfigurationSupport {
 
+    Path get = new Path();
+
     @Bean
     public Docket api(){
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.webfactory.springbootdemo.demoproject.web"))
-                .paths(regex("/api/.*"))
+                .apis(RequestHandlerSelectors.basePackage("com.webfactory.springbootdemo.demoproject"))
+                .paths(springBootActuatorJmxPaths())
                 .build()
-                .apiInfo(metaData());
+                .apiInfo(metaData())
+                .securitySchemes(Lists.newArrayList(oauth()))
+                .securityContexts(Lists.newArrayList(securityContext()))
+                .useDefaultResponseMessages(false)
+                .globalResponseMessage(RequestMethod.GET, new ArrayList<>())
+                ;
     }
 
     private ApiInfo metaData() {
@@ -55,6 +74,57 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/api/swagger-ui.html**").addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");
         registry.addResourceHandler("/api/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
+
+    private Predicate<String> postPaths() {
+        return regex("/api.*");
+    }
+
+    private Predicate<String> springBootActuatorJmxPaths() {
+        return regex("^/(?!env|restart|pause|resume|refresh).*$");
+    }
+
+    @Bean
+    List<GrantType> grantTypes() {
+        List<GrantType> grantTypes = new ArrayList<>();
+        TokenRequestEndpoint tokenRequestEndpoint = new TokenRequestEndpoint("http://localhost:8080"+"/oauth/authorize", "client", "secret" );
+        TokenEndpoint tokenEndpoint = new TokenEndpoint("http://localhost:8080"+"/oauth/token", "token");
+        grantTypes.add(new AuthorizationCodeGrant(tokenRequestEndpoint, tokenEndpoint));
+        return grantTypes;
+    }
+
+    private SecurityContext securityContext() {
+        return SecurityContext.builder()
+                .securityReferences(defaultAuth())
+                . forPaths ( PathSelectors . ant ( "/api/**" )) //Configure which urls need to be certified for oauth2
+                .build();
+    }
+
+    List<SecurityReference> defaultAuth() {
+        return Lists.newArrayList(
+                new SecurityReference("oauth2", scopes().toArray(new AuthorizationScope[0])));
+    }
+
+    private SecurityScheme oauth() {
+
+        return new OAuthBuilder()
+                .name("oauth2")
+                .scopes(scopes())
+                .grantTypes(grantTypes())
+                .build();
+    }
+
+    private List<AuthorizationScope> scopes() {
+        List<AuthorizationScope> list = new ArrayList();
+        list.add(new AuthorizationScope("read", "Grants read access"));
+        list.add(new AuthorizationScope("write", "Grants write access"));
+        return list;
+    }
+
+    @Bean
+    public SecurityConfiguration securityInfo() {
+        return new SecurityConfiguration("client", "secret", "realm",                "union", "access_token", ApiKeyVehicle.HEADER, "access_token", ",");
+
+}
 
 
 }

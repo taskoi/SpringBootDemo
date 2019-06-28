@@ -10,10 +10,7 @@ import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostModify
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostResponse;
 import com.webfactory.springbootdemo.demoproject.service.PostService;
 import com.webfactory.springbootdemo.demoproject.service.impl.PostServiceImpl;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +41,9 @@ public class PostController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
+    })
     @PreAuthorize("#oauth2.hasScope('write')")
     @PostMapping("/createPost")
     public PostResponse createPost(@Valid @RequestBody PostForm postForm) throws UserNotFoundException {
@@ -56,6 +56,9 @@ public class PostController {
             @ApiResponse(code = 401, message = "You are not authorized to use this resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
     @PreAuthorize("@securityService.hasAccess(authentication,#id)")
     @PatchMapping("/updatePost/{id}")
@@ -71,6 +74,9 @@ public class PostController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
+    })
     @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findAllPosts")
     public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {
@@ -84,9 +90,12 @@ public class PostController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
+    })
     @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findPostById/{id}")
-    public Optional<Post> findPost(@PathVariable Long id) throws PostNotFoundException {
+    public Post findPost(@PathVariable Long id) throws PostNotFoundException {
         return postService.findPostById(id);
     }
 
@@ -96,6 +105,9 @@ public class PostController {
             @ApiResponse(code = 401, message = "You are not authorized to use this resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
     @DeleteMapping("/deletePost/{id}")
     @PreAuthorize("@securityService.hasAccess(authentication,#id)")

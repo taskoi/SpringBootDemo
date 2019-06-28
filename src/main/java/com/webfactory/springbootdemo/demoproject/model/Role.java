@@ -1,6 +1,7 @@
 package com.webfactory.springbootdemo.demoproject.model;
 
 
+import io.swagger.annotations.ApiModelProperty;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.persistence.*;
@@ -19,7 +20,8 @@ public class Role {
 
     private String role;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ApiModelProperty(hidden = true)
     private List<User> users = new ArrayList<>();
 
     public Role() {

@@ -51,6 +51,7 @@ public class User implements Serializable, UserDetails {
 
     //defining user posts
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ApiModelProperty(hidden = true)
     private List<Post> userPostsList;
 
     //defining user location
@@ -59,7 +60,7 @@ public class User implements Serializable, UserDetails {
     private Location location;
 
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles = new ArrayList<>();

@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserExistsException(userForm.getEmail());
     }
 
+    @Override
     public User createUser(UserForm userForm) throws UserExistsException, NicknameNotValidException {
 
         User user = new User();

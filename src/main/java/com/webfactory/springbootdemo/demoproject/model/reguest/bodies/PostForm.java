@@ -19,7 +19,7 @@ public class PostForm {
     private String description;
 
     @NotNull(message = "Post must to be linked to a user")
-    private User user;
+    private Long userId;
 
     @NotNull(message = "Post must to be linked to a location")
     private Location location;
@@ -27,11 +27,11 @@ public class PostForm {
     public PostForm() {
     }
 
-    public PostForm(Long id, String title, String description, User user, Location location) {
+    public PostForm(Long id, String title, String description, Long userId, Location location) {
         this.title = title;
         this.description = description;
         this.id = id;
-        this.user = user;
+        this.userId = userId;
         this.location = location;
     }
 
@@ -47,8 +47,8 @@ public class PostForm {
         return description;
     }
 
-    public User getUser() {
-        return this.user;
+    public Long getUser() {
+        return this.userId;
     }
 
     public Location getLocation() {

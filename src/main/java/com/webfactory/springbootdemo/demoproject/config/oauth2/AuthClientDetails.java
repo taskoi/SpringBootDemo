@@ -1,5 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.config.oauth2;
 
+import io.swagger.annotations.Api;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -9,6 +10,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "auth_client_details")
+@Api(value = "demoproject")
 public class AuthClientDetails implements ClientDetails, Serializable {
 
     @Id

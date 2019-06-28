@@ -35,10 +35,7 @@ public class UserController {
 
     @ApiOperation(value = "Create an user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully created user"),
-            @ApiResponse(code = 401, message = "You are not authorized to use this resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+            @ApiResponse(code = 200, message = "Successfully created user")
     })
     @PostMapping("/createUser")
     public User createUser(@Valid @RequestBody UserForm userForm) throws UserExistsException, NicknameNotValidException {
@@ -51,6 +48,9 @@ public class UserController {
             @ApiResponse(code = 401, message = "You are not authorized to use this resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
     @PreAuthorize("@securityService.hasAccess(authentication,#id)")
     @PatchMapping("/updateUser/{id}")
@@ -65,6 +65,9 @@ public class UserController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
+    })
     @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findAll")
     public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
@@ -78,6 +81,9 @@ public class UserController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
+    })
     @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping("/findById/{id}")
     public Optional<User> findUser(@PathVariable Long id) throws UserNotFoundException {
@@ -90,6 +96,9 @@ public class UserController {
             @ApiResponse(code = 401, message = "You are not authorized to use this resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
     @PreAuthorize("#oauth2.hasScope('write')")
     @DeleteMapping("/deleteUser/{id}")

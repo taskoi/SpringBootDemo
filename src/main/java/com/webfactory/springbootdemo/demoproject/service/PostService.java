@@ -11,8 +11,6 @@ import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostRespon
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
-
 public interface PostService {
 
     PostResponse createPost(PostForm postForm) throws UserNotFoundException;
@@ -21,7 +19,7 @@ public interface PostService {
 
     Page<Post> findAll(Pageable pageable) throws PostNotFoundException;
 
-    Optional<Post> findPostById(Long id) throws PostNotFoundException;
+    Post findPostById(Long id) throws PostNotFoundException;
 
     void deletePost(Long id) throws PostNotFoundException;
 

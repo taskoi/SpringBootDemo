@@ -3,6 +3,7 @@ package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
 
 import com.webfactory.springbootdemo.demoproject.model.Location;
 import com.webfactory.springbootdemo.demoproject.model.Role;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
@@ -42,13 +43,14 @@ public class UserForm {
 
     private Location location;
 
+    @ApiModelProperty(hidden = true)
     private List<Role> roles;
 
     public UserForm() {
 
     }
 
-    public UserForm(Long id, String firstName, String lastName, String nickname, String username, String password, String email, Location location, List<Role> roles) {
+    public UserForm(Long id, String firstName, String lastName, String nickname, String username, String password, String email, Location location) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
@@ -57,7 +59,7 @@ public class UserForm {
         this.email = email;
         this.id = id;
         this.location = location;
-        this.roles = roles;
+
     }
 
     public Long getId() {

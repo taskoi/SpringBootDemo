@@ -26,17 +26,10 @@ import java.util.Optional;
 @Service
 public class PostServiceImpl implements PostService {
 
-    private final
-    PostRepository postRepository;
-
-    private final
-    UserRepository userRepository;
-
-    private final
-    LocationRepository locationRepository;
-
-    private final
-    ApplicationEventPublisher applicationEventPublisher;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, LocationRepository locationRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.postRepository = postRepository;
@@ -47,13 +40,13 @@ public class PostServiceImpl implements PostService {
 
     public PostResponse createPost(PostForm postForm) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(postForm.getUser().getId());
+        Optional<User> user = userRepository.findById(postForm.getUser());
         User actualUser;
 
         if (user.isPresent()) {
             actualUser = user.get();
         } else {
-            throw new UserNotFoundException(postForm.getUser().getNickname());
+            throw new UserNotFoundException(String.valueOf(postForm.getUser()));
         }
 
         Post post = new Post();
@@ -86,13 +79,12 @@ public class PostServiceImpl implements PostService {
         postResponse.setTitle(postForm.getTitle());
         postResponse.setDescription(postForm.getDescription());
         postResponse.setLocation(location);
-        postResponse.setUserEmail(postForm.getUser().getEmail());
-        postResponse.setUserId(postForm.getUser().getId());
+        postResponse.setUserId(postForm.getUser());
 
         return postResponse;
     }
 
-    public Post updatePost(Long id, PostModify postModify) throws PostNotFoundException, UserIsNotOwnerException {
+    public Post updatePost(Long id, PostModify postModify) throws PostNotFoundException{
         Optional<Post> post = postRepository.findById(id);
 
         if (!post.isPresent()) {
@@ -103,7 +95,7 @@ public class PostServiceImpl implements PostService {
         if (postModify.getDescription() != null)
             post.get().setDescription(postModify.getDescription());
 
-        applicationEventPublisher.publishEvent(new CreatePostEvent(this,post.get(),post.get().getUser()));
+        applicationEventPublisher.publishEvent(new CreatePostEvent(this, post.get(), post.get().getUser()));
         return postRepository.save(post.get());
     }
 
@@ -118,12 +110,13 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    public Optional<Post> findPostById(Long id) throws PostNotFoundException {
-        if (!postRepository.findById(id).isPresent())
+    public Post findPostById(Long id) throws PostNotFoundException {
+        Optional<Post> post = postRepository.findById(id);
+        if (!post.isPresent())
             throw new PostNotFoundException("Post not found!");
         else {
-            applicationEventPublisher.publishEvent(new FindPostByIdEvent(this, postRepository.findById(id).get()));
-            return postRepository.findById(id);
+            applicationEventPublisher.publishEvent(new FindPostByIdEvent(this, post.get()));
+            return post.get();
         }
     }
 

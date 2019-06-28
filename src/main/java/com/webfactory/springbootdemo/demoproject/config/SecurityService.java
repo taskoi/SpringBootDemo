@@ -20,7 +20,7 @@ public class SecurityService {
         this.userRepository = userRepository;
     }
 
-    public boolean hasAccess(Authentication authentication, int id) {
+    public boolean hasAccessPost(Authentication authentication, int id) {
         System.out.println("da" + authentication.getPrincipal().toString());
         String username = authentication.getPrincipal().toString();
         User user = userRepository.findByUsername(username);
@@ -32,4 +32,11 @@ public class SecurityService {
         }
         return flag;
     }
+
+
+//    public boolean hasAccessUser(Authentication authentication, Long id ){
+//        String username = authentication.getPrincipal().toString();
+//        User user = userRepository.findById(id);
+//    }
 }
+
