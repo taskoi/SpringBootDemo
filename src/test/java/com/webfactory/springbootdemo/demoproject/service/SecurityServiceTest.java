@@ -51,6 +51,8 @@ public class SecurityServiceTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    //change for gitflow.
+
     @Test
     public void hasAccessPostTest(){
         Location location = new Location((float) 22, (float) 33, "Skopje", "Macedonia");
