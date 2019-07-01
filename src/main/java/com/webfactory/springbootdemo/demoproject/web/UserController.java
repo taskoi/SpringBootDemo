@@ -52,7 +52,7 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
-    @PreAuthorize("@securityService.hasAccessUser(authentication,#id)")
+    @PreAuthorize("@securityServiceImpl.hasAccessUser(authentication,#id)")
     @PatchMapping("/updateUser/{id}")
     public User updateUser(@PathVariable Long id, @Valid @RequestBody UserForm userForm) throws UserNotFoundException, NicknameNotValidException {
         return userService.updateUser(userForm, id);

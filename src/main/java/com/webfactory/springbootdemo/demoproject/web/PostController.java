@@ -60,7 +60,7 @@ public class PostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
-    @PreAuthorize("@securityService.hasAccessPost(authentication,#id)")
+    @PreAuthorize("@securityServiceImpl.hasAccessPost(authentication,#id)")
     @PatchMapping("/updatePost/{id}")
     public Post updatePost(@PathVariable Long id, @RequestBody PostModify postModify) throws PostNotFoundException, UserIsNotOwnerException {
 
@@ -110,7 +110,7 @@ public class PostController {
             @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
     @DeleteMapping("/deletePost/{id}")
-    @PreAuthorize("@securityService.hasAccessPost(authentication,#id)")
+    @PreAuthorize("@securityServiceImpl.hasAccessPost(authentication,#id)")
     public void deletePost(@PathVariable Long id) throws PostNotFoundException {
         postService.deletePost(id);
     }

@@ -1,10 +1,11 @@
-package com.webfactory.springbootdemo.demoproject.config;
+package com.webfactory.springbootdemo.demoproject.service.impl;
 
 import com.webfactory.springbootdemo.demoproject.model.Post;
 import com.webfactory.springbootdemo.demoproject.model.User;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
+import com.webfactory.springbootdemo.demoproject.service.SecurityService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -12,38 +13,32 @@ import javax.transaction.Transactional;
 
 @Service
 @Transactional
-public class SecurityService {
+public class SecurityServiceImpl implements SecurityService {
 
     private final UserRepository userRepository;
 
-    public SecurityService(UserRepository userRepository) {
+    public SecurityServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
 
     }
 
-    public boolean hasAccessPost(Authentication authentication, int id) {
-        System.out.println("da" + authentication.getPrincipal().toString());
-        String username = authentication.getPrincipal().toString();
+    @Override
+    public boolean hasAccessPost(String username, int postId) {
         User user = userRepository.findByUsername(username);
-        boolean flag = false;
         for (Post post : user.getUserPostsList()) {
-            if (post.getId() == id) {
-                flag= true;
+            if (post.getId() == postId) {
+                return true;
             }
         }
-        return flag;
+        return false;
     }
 
-
-    public boolean hasAccessUser(Authentication authentication, Long id ){
-        String username = authentication.getPrincipal().toString();
+    @Override
+    public boolean hasAccessUser(String username, Long userId) {
         User user = userRepository.findByUsername(username);
-        boolean flag = false;
-
-        if(user.getId() == id){
-            flag = true;
-        }
-        return flag;
+        return user.getId().equals(userId);
     }
+
+
 }
 
