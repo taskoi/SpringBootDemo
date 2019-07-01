@@ -12,6 +12,7 @@ import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.PostRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 import com.webfactory.springbootdemo.demoproject.service.PostService;
+import org.springframework.cache.annotation.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@CacheConfig(cacheNames = {"posts"})
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
@@ -38,6 +40,7 @@ public class PostServiceImpl implements PostService {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
+    @CacheEvict(key = "#postForm.title")
     public PostResponse createPost(PostForm postForm) throws UserNotFoundException {
 
         Optional<User> user = userRepository.findById(postForm.getUser());
@@ -84,6 +87,7 @@ public class PostServiceImpl implements PostService {
         return postResponse;
     }
 
+    @Caching(put = @CachePut(key = "#id"),evict = @CacheEvict(key = "#id"))
     public Post updatePost(Long id, PostModify postModify) throws PostNotFoundException{
         Optional<Post> post = postRepository.findById(id);
 
@@ -99,6 +103,7 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post.get());
     }
 
+    @Cacheable(keyGenerator = "customKeyGenerator")
     public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {
         Page<Post> all = postRepository.findAll(pageable);
         if (all.getSize() == 0)
@@ -110,6 +115,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Cacheable(key = "#id")
     public Post findPostById(Long id) throws PostNotFoundException {
         Optional<Post> post = postRepository.findById(id);
         if (!post.isPresent())
@@ -120,6 +126,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @CacheEvict(key = "#id")
     public void deletePost(Long id) throws PostNotFoundException {
         if (!postRepository.findById(id).isPresent())
             throw new PostNotFoundException("Post you want to delete does not exist!");
@@ -129,6 +136,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Cacheable(key = "#postTitle")
     public Page<Post> findByTitle(String postTitle, Pageable pageable) throws PostNotFoundException {
         Page<Post> all = postRepository.findAllByTitle(pageable, postTitle);
 
@@ -141,6 +149,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Cacheable(key = "#location.id")
     public Page<Post> findByLocation(Location location, Pageable pageable) throws PostNotFoundException {
         Page<Post> all = postRepository.findAllByLocation(pageable, location);
 

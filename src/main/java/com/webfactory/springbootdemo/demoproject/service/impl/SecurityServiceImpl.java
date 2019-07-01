@@ -6,6 +6,7 @@ import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 import com.webfactory.springbootdemo.demoproject.service.SecurityService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
+    @Cacheable(value = "security",key = "#postId")
     public boolean hasAccessPost(String username, int postId) {
         User user = userRepository.findByUsername(username);
         for (Post post : user.getUserPostsList()) {
@@ -34,6 +36,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
+    @Cacheable(value = "security",key = "#userId")
     public boolean hasAccessUser(String username, Long userId) {
         User user = userRepository.findByUsername(username);
         return user.getId().equals(userId);

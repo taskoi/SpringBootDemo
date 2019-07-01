@@ -10,6 +10,7 @@ import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 
 
+import org.springframework.cache.annotation.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import java.util.*;
 
 @Service
 @Transactional
+@CacheConfig(cacheNames = {"users"})
 public class UserServiceImpl implements UserDetailsService, com.webfactory.springbootdemo.demoproject.service.UserService {
 
     private final UserRepository userRepository;
@@ -75,9 +77,10 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserExistsException(userForm.getEmail());
     }
 
+    @CacheEvict(key = "#userForm.username")
     @Override
     public User createUser(UserForm userForm) throws UserExistsException, NicknameNotValidException {
-
+        System.out.println("da");
         User user = new User();
         Location location = new Location();
         List<Role> roles = new ArrayList<>();
@@ -110,7 +113,8 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         return userRepository.save(user);
     }
 
-
+    @Caching(put = @CachePut(key = "#id"),evict = @CacheEvict(key = "#id"))
+    @Override
     public User updateUser(UserForm userForm, Long id) throws UserNotFoundException, NicknameNotValidException {
 
         Optional<User> user = userRepository.findById(id);
@@ -163,6 +167,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         return userRepository.save(actualUser);
     }
 
+    @Cacheable(key = "#id")
     public Optional<User> findById(Long id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -173,6 +178,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserNotFoundException("User with that id does not exist");
     }
 
+    @CacheEvict(key = "#id")
     public void deleteUser(Long id) throws UserNotFoundException {
         if (userRepository.findById(id).isPresent()) {
             applicationEventPublisher.publishEvent(new DeleteUserEvent(this, id));
@@ -182,6 +188,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserNotFoundException("User with that id does not exist");
     }
 
+    @Cacheable(keyGenerator = "customKeyGenerator")
     public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
         Page<User> all = userRepository.findAll(pageable);
         if (all.getSize() == 0) {
@@ -192,6 +199,8 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             return all;
         }
     }
+
+    @Cacheable(key = "#nickname")
     public Page<User> findByNickname(Pageable pageable, String nickname) throws UserNotFoundException {
         Page<User> all = userRepository.findAllByNickname(pageable, nickname);
         if (all.getSize() == 0) {
@@ -204,6 +213,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         }
     }
 
+    @Cacheable(key = "#city")
     public Page<User> findByLocationCity(Pageable pageable, String city) throws UserNotFoundException {
         Page<User> all = userRepository.findAllByLocationCityContaining(pageable, city);
         if (all.getSize() == 0) {
@@ -216,6 +226,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         }
     }
 
+    @Cacheable(key = "#username")
     public Page<User> findAllByUsername(Pageable pageable, String username) {
         Page<User> all = userRepository.findAllByUsername(pageable, username);
         if (all.getSize() == 0)
@@ -228,6 +239,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         }
     }
 
+    @Cacheable(key = "#username")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
