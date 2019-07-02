@@ -4,6 +4,7 @@ import com.webfactory.springbootdemo.demoproject.events.*;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.*;
 import com.webfactory.springbootdemo.demoproject.model.*;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserModify;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.LogRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
@@ -77,10 +78,25 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserExistsException(userForm.getEmail());
     }
 
+    private void checkUserModifyForm(UserModify userModify) throws UserExistsException, NicknameNotValidException {
+        checkUserModifyNickName(userModify);
+        checkUserModifyEmail(userModify);
+    }
+
+    private void checkUserModifyNickName(UserModify userModify) throws NicknameNotValidException {
+        if (userRepository.findByNickname(userModify.getNickname()) != null)
+            throw new NicknameNotValidException(userModify.getNickname());
+    }
+
+
+    private void checkUserModifyEmail(UserModify userModify) throws UserExistsException {
+        if (userRepository.findByEmail(userModify.getEmail()) != null)
+            throw new UserExistsException(userModify.getEmail());
+    }
+
     @CacheEvict(key = "#userForm.username")
     @Override
     public User createUser(UserForm userForm) throws UserExistsException, NicknameNotValidException {
-        System.out.println("da");
         User user = new User();
         Location location = new Location();
         List<Role> roles = new ArrayList<>();
@@ -113,49 +129,49 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         return userRepository.save(user);
     }
 
-    @Caching(put = @CachePut(key = "#id"),evict = @CacheEvict(key = "#id"))
+    @Caching(put = @CachePut(key = "#userModify.username"),evict = @CacheEvict(key = "#userModify.username"))
     @Override
-    public User updateUser(UserForm userForm, Long id) throws UserNotFoundException, NicknameNotValidException {
-
+    public User updateUser(UserModify userModify, Long id) throws UserNotFoundException, NicknameNotValidException {
         Optional<User> user = userRepository.findById(id);
         User actualUser;
 
         if (user.isPresent())
             actualUser = user.get();
         else
-            throw new UserNotFoundException(userForm.getNickname());
+            throw new UserNotFoundException(userModify.getNickname());
 
-        if (userForm.getPassword() != null) {
-            actualUser.setPassword(userForm.getPassword());
+        if (userModify.getPassword() != null) {
+            actualUser.setPassword(userModify.getPassword());
         }
 
-        if (userForm.getLastName() != null) {
-            actualUser.setLastName(userForm.getLastName());
+        if (userModify.getLastName() != null) {
+            actualUser.setLastName(userModify.getLastName());
         }
 
-        if (userForm.getFirstName() != null) {
-            actualUser.setFirstName(userForm.getFirstName());
+        if (userModify.getFirstName() != null) {
+            System.out.println(userModify.getFirstName());
+            actualUser.setFirstName(userModify.getFirstName());
         }
 
-        if (userForm.getLocation() != null) {
-            actualUser.setLocation(userForm.getLocation());
+        if (userModify.getLocation() != null) {
+            actualUser.setLocation(userModify.getLocation());
         }
 
         locationRepository.save(actualUser.getLocation());
 
-        if (userForm.getUsername() != null) {
-            actualUser.setUsername(userForm.getUsername());
+        if (userModify.getUsername() != null) {
+            actualUser.setUsername(userModify.getUsername());
         }
 
-        if (userForm.getNickname() != null) {
-            checkNickName(userForm);
-            actualUser.setNickname(userForm.getNickname());
+        if (userModify.getNickname() != null) {
+            checkUserModifyNickName(userModify);
+            actualUser.setNickname(userModify.getNickname());
         }
 
         //change was done because in testing was throwing UnsuportedOperationException
         //because i was returing fixed size of an array
-        if (userForm.getRoles() != null) {
-            for (Role r : userForm.getRoles()) {
+        if (userModify.getRoles() != null) {
+            for (Role r : userModify.getRoles()) {
                 List<Role> userRoles = new LinkedList<>(actualUser.getRoles());
                 userRoles.add(r);
                 actualUser.setRoles(userRoles);
@@ -188,7 +204,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserNotFoundException("User with that id does not exist");
     }
 
-    @Cacheable(keyGenerator = "customKeyGenerator")
+    @Cacheable("users")
     public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
         Page<User> all = userRepository.findAll(pageable);
         if (all.getSize() == 0) {

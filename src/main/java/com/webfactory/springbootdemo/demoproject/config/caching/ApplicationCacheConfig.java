@@ -23,7 +23,9 @@ public class ApplicationCacheConfig {
 
         SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
         Cache usersCache = new ConcurrentMapCache("users");
-        simpleCacheManager.setCaches(Collections.singletonList(usersCache));
+        Cache postsCache = new ConcurrentMapCache("posts");
+        Cache securityCache = new ConcurrentMapCache("security");
+        simpleCacheManager.setCaches(Arrays.asList(usersCache,securityCache,postsCache));
         return simpleCacheManager;
     }
 

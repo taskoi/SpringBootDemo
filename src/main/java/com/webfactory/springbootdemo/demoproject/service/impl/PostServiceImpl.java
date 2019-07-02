@@ -40,7 +40,7 @@ public class PostServiceImpl implements PostService {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    @CacheEvict(key = "#postForm.title")
+    @CacheEvict(key = "{#postForm.title, #postForm.userId}")
     public PostResponse createPost(PostForm postForm) throws UserNotFoundException {
 
         Optional<User> user = userRepository.findById(postForm.getUser());
@@ -87,7 +87,7 @@ public class PostServiceImpl implements PostService {
         return postResponse;
     }
 
-    @Caching(put = @CachePut(key = "#id"),evict = @CacheEvict(key = "#id"))
+    @Caching(put = @CachePut(key = "{}"),evict = @CacheEvict(key = "#id"))
     public Post updatePost(Long id, PostModify postModify) throws PostNotFoundException{
         Optional<Post> post = postRepository.findById(id);
 

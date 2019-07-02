@@ -3,6 +3,7 @@ package com.webfactory.springbootdemo.demoproject.web;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.*;
 import com.webfactory.springbootdemo.demoproject.model.User;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserModify;
 import com.webfactory.springbootdemo.demoproject.service.UserService;
 import com.webfactory.springbootdemo.demoproject.service.impl.UserServiceImpl;
 import io.swagger.annotations.*;
@@ -54,8 +55,8 @@ public class UserController {
     })
     @PreAuthorize("@securityServiceImpl.hasAccessUser(authentication,#id)")
     @PatchMapping("/updateUser/{id}")
-    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserForm userForm) throws UserNotFoundException, NicknameNotValidException {
-        return userService.updateUser(userForm, id);
+    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserModify userModify) throws UserNotFoundException, NicknameNotValidException {
+        return userService.updateUser(userModify, id);
     }
 
     @ApiOperation(value = "View a list of all users")

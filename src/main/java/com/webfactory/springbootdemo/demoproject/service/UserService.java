@@ -4,6 +4,7 @@ import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.UserE
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.UserNotFoundException;
 import com.webfactory.springbootdemo.demoproject.model.User;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
+import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserModify;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,7 +15,7 @@ public interface UserService {
 
     User createUser(UserForm userForm) throws UserExistsException;
 
-    User updateUser(UserForm userForm, Long id) throws UserNotFoundException;
+    User updateUser(UserModify userModify, Long id) throws UserNotFoundException;
 
     Page<User> findAll(Pageable pageable) throws UserNotFoundException;
 

@@ -1,8 +1,10 @@
 package com.webfactory.springbootdemo.demoproject.service;
 
+import org.springframework.security.core.Authentication;
+
 public interface SecurityService {
 
-     boolean hasAccessPost(String username,int postId);
+     boolean hasAccessPost(Authentication authentication, int postId);
 
-     boolean hasAccessUser(String username,Long userId);
+     boolean hasAccessUser(Authentication authentication, Long userId);
 }

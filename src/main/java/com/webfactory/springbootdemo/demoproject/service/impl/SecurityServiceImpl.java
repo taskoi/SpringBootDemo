@@ -24,10 +24,12 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    @Cacheable(value = "security",key = "#postId")
-    public boolean hasAccessPost(String username, int postId) {
+    @Cacheable(value = "security", keyGenerator = "customKeyGenerator")
+    public boolean hasAccessPost(Authentication authentication, int postId) {
+        String username = authentication.getPrincipal().toString();
         User user = userRepository.findByUsername(username);
         for (Post post : user.getUserPostsList()) {
+            System.out.println(post.getId() + "\n");
             if (post.getId() == postId) {
                 return true;
             }
@@ -36,8 +38,9 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    @Cacheable(value = "security",key = "#userId")
-    public boolean hasAccessUser(String username, Long userId) {
+    @Cacheable(value = "security",keyGenerator = "customKeyGenerator")
+    public boolean hasAccessUser(Authentication authentication, Long userId) {
+        String username = authentication.getPrincipal().toString();
         User user = userRepository.findByUsername(username);
         return user.getId().equals(userId);
     }
