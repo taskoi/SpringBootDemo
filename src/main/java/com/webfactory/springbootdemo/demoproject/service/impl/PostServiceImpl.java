@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -87,7 +88,7 @@ public class PostServiceImpl implements PostService {
         return postResponse;
     }
 
-    @Caching(put = @CachePut(key = "{}"),evict = @CacheEvict(key = "#id"))
+    @Caching(put = @CachePut(key = "{#postModify.title,#id}"),evict = @CacheEvict(key = "{#postModify.title,#id}"))
     public Post updatePost(Long id, PostModify postModify) throws PostNotFoundException{
         Optional<Post> post = postRepository.findById(id);
 
@@ -103,13 +104,13 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post.get());
     }
 
-    @Cacheable(keyGenerator = "customKeyGenerator")
+    @Cacheable("posts")
     public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {
         Page<Post> all = postRepository.findAll(pageable);
         if (all.getSize() == 0)
             throw new PostNotFoundException("No posts are found!");
         else {
-            List<Post> posts = postRepository.findAll();
+            List<Post> posts = all.getContent();
             applicationEventPublisher.publishEvent(new FindAllPostsEvent(this, posts));
             return all;
         }
@@ -143,22 +144,28 @@ public class PostServiceImpl implements PostService {
         if (all.getSize() == 0)
             throw new PostNotFoundException("No posts are found with that title");
         else {
-            List<Post> posts = postRepository.findAllByTitle(postTitle);
+            List<Post> posts = all.getContent();
             applicationEventPublisher.publishEvent(new FindAllPostsByTitle(this, posts));
             return all;
         }
     }
 
-    @Cacheable(key = "#location.id")
+    @Cacheable(key = "{#location.latitude, #location.longitude}")
     public Page<Post> findByLocation(Location location, Pageable pageable) throws PostNotFoundException {
         Page<Post> all = postRepository.findAllByLocation(pageable, location);
 
         if (all.getSize() == 0)
             throw new PostNotFoundException("No posts are found with that location");
         else {
-            List<Post> posts = postRepository.findAllByLocation(location);
+            List<Post> posts = all.getContent();
             applicationEventPublisher.publishEvent(new FindAllPostsByLocationEvent(this, posts));
             return all;
         }
+    }
+
+    @Override
+    @Cacheable("posts")
+    public List<Post> getall() {
+        return postRepository.findAll();
     }
 }

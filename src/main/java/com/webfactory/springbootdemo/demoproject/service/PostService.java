@@ -11,6 +11,8 @@ import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.PostRespon
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface PostService {
 
     PostResponse createPost(PostForm postForm) throws UserNotFoundException;
@@ -26,5 +28,7 @@ public interface PostService {
     Page<Post> findByTitle(String postTitle, Pageable pageable) throws PostNotFoundException;
 
     Page<Post> findByLocation(Location location, Pageable pageable) throws PostNotFoundException;
+
+    List<Post> getall();
 
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -63,7 +64,6 @@ public class PostController {
     @PreAuthorize("@securityServiceImpl.hasAccessPost(authentication,#id)")
     @PatchMapping("/updatePost/{id}")
     public Post updatePost(@PathVariable Long id, @RequestBody PostModify postModify) throws PostNotFoundException, UserIsNotOwnerException {
-
         return postService.updatePost(id, postModify);
     }
 
@@ -77,12 +77,16 @@ public class PostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
-    @PreAuthorize("#oauth2.hasScope('read')")
+    @PreAuthorize("#oauth2.hasScope('write')")
     @GetMapping("/findAllPosts")
     public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {
         return postService.findAll(pageable);
     }
 
+    @GetMapping("/asd")
+    public List<Post> postsa(){
+        return postService.getall();
+    }
     @ApiOperation(value = "Search for a post by ID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrived post"),

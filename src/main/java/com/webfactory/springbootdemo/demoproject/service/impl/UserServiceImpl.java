@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         return userRepository.save(user);
     }
 
-    @Caching(put = @CachePut(key = "#userModify.username"),evict = @CacheEvict(key = "#userModify.username"))
+    @Caching(put = @CachePut(key = "{#userModify.username, #id}"),evict = @CacheEvict(key = "{#userModify.username,#id}"))
     @Override
     public User updateUser(UserModify userModify, Long id) throws UserNotFoundException, NicknameNotValidException {
         Optional<User> user = userRepository.findById(id);
