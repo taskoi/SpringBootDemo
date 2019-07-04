@@ -9,9 +9,12 @@ import com.webfactory.springbootdemo.demoproject.service.impl.PostServiceImpl;
 import com.webfactory.springbootdemo.demoproject.service.impl.UserServiceImpl;
 import io.swagger.annotations.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/search")
@@ -39,8 +42,8 @@ public class SearchController {
     })
     @GetMapping("/findUserByNickname/{nickname}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public Page<User> findByNickname(@PathVariable String nickname, Pageable pageable) throws UserNotFoundException {
-        return userServiceImpl.findByNickname(pageable, nickname);
+    public List<User> findByNickname(@PathVariable String nickname,@RequestParam("page")int pageIndex, @RequestParam("size") int pageSize) throws UserNotFoundException {
+        return userServiceImpl.findByNickname(PageRequest.of(pageIndex,pageSize), nickname).getContent();
     }
 
     @ApiOperation(value = "Search users by location city")
@@ -55,8 +58,8 @@ public class SearchController {
     })
     @GetMapping("/findUserByLocation/{locationCity}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public Page<User> findByLocationCity(@PathVariable String locationCity, Pageable pageable) throws UserNotFoundException {
-        return userServiceImpl.findByLocationCity(pageable, locationCity);
+    public List<User> findByLocationCity(@PathVariable String locationCity,@RequestParam("page")int pageIndex,@RequestParam("size") int pageSize) throws UserNotFoundException {
+        return userServiceImpl.findByLocationCity(PageRequest.of(pageIndex,pageSize), locationCity).getContent();
     }
 
     @ApiOperation(value = "Search posts by post title")
@@ -71,8 +74,8 @@ public class SearchController {
     })
     @GetMapping("/findPostByTitle/{postTitle}")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public Page<Post> findByTitle(@PathVariable String postTitle, Pageable pageable) throws PostNotFoundException {
-        return postServiceImpl.findByTitle(postTitle, pageable);
+    public List<Post> findByTitle(@PathVariable String postTitle, @RequestParam("page")int pageIndex,@RequestParam("size") int pageSize) throws PostNotFoundException {
+        return postServiceImpl.findByTitle(postTitle, PageRequest.of(pageIndex,pageSize)).getContent();
     }
 
     @ApiOperation(value = "Search posts by location")
@@ -87,7 +90,7 @@ public class SearchController {
     })
     @PostMapping("/findPostByLocation")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public Page<Post> findByLocation(@RequestBody Location location, Pageable pageable) throws PostNotFoundException {
-        return postServiceImpl.findByLocation(location, pageable);
+    public List<Post> findByLocation(@RequestBody Location location, @RequestParam("page")int pageIndex,@RequestParam("size") int pageSize) throws PostNotFoundException {
+        return postServiceImpl.findByLocation(location, PageRequest.of(pageIndex,pageSize)).getContent();
     }
 }

@@ -1,6 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.service.impl;
 
-import com.webfactory.springbootdemo.demoproject.model.Role;
+
 import com.webfactory.springbootdemo.demoproject.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,8 +21,9 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        for (Role role : user.getRoles())
-            authorities.add(new SimpleGrantedAuthority(role.getRole()));
+//        for (Role role : user.getRoles())
+//            authorities.add(new SimpleGrantedAuthority(role.getRole()));
+        authorities.add(new SimpleGrantedAuthority("USER"));
         return authorities;
     }
 

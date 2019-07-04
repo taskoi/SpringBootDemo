@@ -14,14 +14,13 @@ public class Post implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false, unique = true)
+    @Column(name = "title", nullable = false)
     @Size(max = 120)
     private String title;
 
     @Column(name = "description", nullable = false)
     @Size(max = 1000)
     private String description;
-
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")

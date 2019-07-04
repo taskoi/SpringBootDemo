@@ -7,7 +7,7 @@ import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
 import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserModify;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.LogRepository;
-import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
+
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 
 
@@ -23,23 +23,23 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Service
 @Transactional
-@CacheConfig(cacheNames = {"users"})
-public class UserServiceImpl implements UserDetailsService, com.webfactory.springbootdemo.demoproject.service.UserService {
+public class UserServiceImpl implements Serializable, UserDetailsService, com.webfactory.springbootdemo.demoproject.service.UserService {
 
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
-    private final RoleRepository roleRepository;
+    //private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public UserServiceImpl(UserRepository userRepository, LocationRepository locationRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, LogRepository logRepository, ApplicationEventPublisher applicationEventPublisher) {
+    public UserServiceImpl(UserRepository userRepository, LocationRepository locationRepository, PasswordEncoder passwordEncoder, LogRepository logRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.userRepository = userRepository;
         this.locationRepository = locationRepository;
-        this.roleRepository = roleRepository;
+
         this.passwordEncoder = passwordEncoder;
         this.applicationEventPublisher = applicationEventPublisher;
     }
@@ -94,12 +94,21 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserExistsException(userModify.getEmail());
     }
 
-    @CacheEvict(key = "#userForm.username")
+
+    @Caching(put = {
+            @CachePut(value = "user", key = "#result.id")}
+            , evict = {
+            @CacheEvict(value = "allUsers", allEntries = true),
+            @CacheEvict(value = "usersByNickname", allEntries = true),
+            @CacheEvict(value = "usersByCity", allEntries = true),
+            @CacheEvict(value = "usersByUsername", allEntries = true)}
+    )
+
     @Override
     public User createUser(UserForm userForm) throws UserExistsException, NicknameNotValidException {
         User user = new User();
         Location location = new Location();
-        List<Role> roles = new ArrayList<>();
+        //List<Role> roles = new ArrayList<>();
 
         checkUserForm(userForm);
 
@@ -113,12 +122,12 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         location.setCountry(userForm.getLocation().getCountry());
         location.setLatitude(userForm.getLocation().getLatitude());
         location.setLongitude(userForm.getLocation().getLongitude());
-        for (Role r : userForm.getRoles()) {
-            roles.add(r);
-            roleRepository.save(r);
-        }
-
-        user.setRoles(roles);
+//        for (Role r : userForm.getRoles()) {
+//            roles.add(r);
+//            roleRepository.save(r);
+//        }
+//
+//        user.setRoles(roles);
         user.setLocation(location);
         location.getLocationUsers().add(user);
 
@@ -126,10 +135,23 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
 
         applicationEventPublisher.publishEvent(new CreateUserEvent(this, user));
 
-        return userRepository.save(user);
+        User save = userRepository.save(user);
+        return save;
     }
 
-    @Caching(put = @CachePut(key = "{#userModify.username, #id}"),evict = @CacheEvict(key = "{#userModify.username,#id}"))
+    @Caching(
+            put = {
+                @CachePut(value = "user", key = "#result.id"),
+                @CachePut(value = "security-user", key = "{#result.username, #result.id}"),
+                @CachePut(value = "user-details", key = "#result.username")
+            },
+            evict = {
+                @CacheEvict(value = "allUsers", allEntries = true),
+                @CacheEvict(value = "usersByNickname", allEntries = true),
+                @CacheEvict(value = "usersByCity", allEntries = true),
+                @CacheEvict(value = "usersByUsername", allEntries = true)
+            }
+    )
     @Override
     public User updateUser(UserModify userModify, Long id) throws UserNotFoundException, NicknameNotValidException {
         Optional<User> user = userRepository.findById(id);
@@ -170,20 +192,21 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
 
         //change was done because in testing was throwing UnsuportedOperationException
         //because i was returing fixed size of an array
-        if (userModify.getRoles() != null) {
-            for (Role r : userModify.getRoles()) {
-                List<Role> userRoles = new LinkedList<>(actualUser.getRoles());
-                userRoles.add(r);
-                actualUser.setRoles(userRoles);
-                roleRepository.save(r);
-            }
-        }
+//        if (userModify.getRoles() != null) {
+//            for (Role r : userModify.getRoles()) {
+//                List<Role> userRoles = new LinkedList<>(actualUser.getRoles());
+//                userRoles.add(r);
+//                actualUser.setRoles(userRoles);
+//                roleRepository.save(r);
+//            }
+//        }
 
         applicationEventPublisher.publishEvent(new UpdateUserEvent(this, actualUser));
-        return userRepository.save(actualUser);
+        User save = userRepository.save(actualUser);
+        return save;
     }
 
-    @Cacheable(key = "#id")
+    @Cacheable(value = "user", key = "#id")
     public Optional<User> findById(Long id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -194,7 +217,16 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserNotFoundException("User with that id does not exist");
     }
 
-    @CacheEvict(key = "#id")
+    //    @CacheEvict(value = "user", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(value = "user", key = "#id"),
+            @CacheEvict(value = "allUsers", allEntries = true),
+            @CacheEvict(value = "usersByNickname", allEntries = true),
+            @CacheEvict(value = "usersByCity", allEntries = true),
+            @CacheEvict(value = "usersByUsername", allEntries = true),
+            @CacheEvict(value = "security-user", allEntries = true),
+            @CacheEvict(value = "user-details", allEntries = true)}
+    )
     public void deleteUser(Long id) throws UserNotFoundException {
         if (userRepository.findById(id).isPresent()) {
             applicationEventPublisher.publishEvent(new DeleteUserEvent(this, id));
@@ -204,7 +236,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
             throw new UserNotFoundException("User with that id does not exist");
     }
 
-    @Cacheable("users")
+    @Cacheable(value = "allUsers")
     public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
         Page<User> all = userRepository.findAll(pageable);
         if (all.getSize() == 0) {
@@ -216,7 +248,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         }
     }
 
-    @Cacheable(key = "#nickname")
+    @Cacheable(value = "usersByNickname", key = "#nickname")
     public Page<User> findByNickname(Pageable pageable, String nickname) throws UserNotFoundException {
         Page<User> all = userRepository.findAllByNickname(pageable, nickname);
         if (all.getSize() == 0) {
@@ -229,7 +261,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         }
     }
 
-    @Cacheable(key = "#city")
+    @Cacheable(value = "usersByCity", key = "#city")
     public Page<User> findByLocationCity(Pageable pageable, String city) throws UserNotFoundException {
         Page<User> all = userRepository.findAllByLocationCityContaining(pageable, city);
         if (all.getSize() == 0) {
@@ -242,7 +274,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         }
     }
 
-    @Cacheable(key = "#username")
+    @Cacheable(value = "usersByUsername", key = "#username")
     public Page<User> findAllByUsername(Pageable pageable, String username) {
         Page<User> all = userRepository.findAllByUsername(pageable, username);
         if (all.getSize() == 0)
@@ -255,7 +287,7 @@ public class UserServiceImpl implements UserDetailsService, com.webfactory.sprin
         }
     }
 
-    @Cacheable(key = "#username")
+    @Cacheable(value = "user-details", key = "#username")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);

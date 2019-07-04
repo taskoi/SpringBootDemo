@@ -11,6 +11,7 @@ import io.swagger.annotations.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
@@ -69,10 +70,10 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
-    @PreAuthorize("#oauth2.hasScope('read')")
+
     @GetMapping("/findAll")
-    public Page<User> findAll(Pageable pageable) throws UserNotFoundException {
-        return userService.findAll(pageable);
+    public List<User> findAll(@RequestParam("page")int pageIndex,@RequestParam("size") int pageSize) throws UserNotFoundException {
+        return userService.findAll(PageRequest.of(pageIndex,pageSize)).getContent();
     }
 
     @ApiOperation(value = "Search for a user by ID")
@@ -85,7 +86,7 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Bearer - Token", paramType = "header",required = true),
     })
-    @PreAuthorize("#oauth2.hasScope('read')")
+
     @GetMapping("/findById/{id}")
     public Optional<User> findUser(@PathVariable Long id) throws UserNotFoundException {
         return userService.findById(id);

@@ -29,6 +29,4 @@ public interface PostService {
 
     Page<Post> findByLocation(Location location, Pageable pageable) throws PostNotFoundException;
 
-    List<Post> getall();
-
 }

@@ -1,7 +1,7 @@
 package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
 
 import com.webfactory.springbootdemo.demoproject.model.Location;
-import com.webfactory.springbootdemo.demoproject.model.Role;
+
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
@@ -23,11 +23,11 @@ public class UserModify {
     @Size(min = 8, max = 120, message = "Password must to be between 8 and 120 characters")
     private String password;
     private Location location;
-    private List<Role> roles;
+    //private List<Role> roles;
 
     public UserModify(){}
 
-    public UserModify(String username,String nickname,String firstName, String lastName, String email, String password, Location location, List<Role> roles) {
+    public UserModify(String username,String nickname,String firstName, String lastName, String email, String password, Location location) {
         this.firstName = firstName;
         this.username = username;
         this.nickname = nickname;
@@ -35,7 +35,7 @@ public class UserModify {
         this.email = email;
         this.password = password;
         this.location = location;
-        this.roles = roles;
+
     }
 
     public void setUsername(String username) {
@@ -66,9 +66,6 @@ public class UserModify {
         this.location = location;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
 
     public String getUsername() {
         return username;
@@ -98,7 +95,5 @@ public class UserModify {
         return location;
     }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
+
 }

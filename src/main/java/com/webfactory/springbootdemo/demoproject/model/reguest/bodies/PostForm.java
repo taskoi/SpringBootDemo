@@ -8,8 +8,6 @@ import javax.validation.constraints.Size;
 
 public class PostForm {
 
-    private Long id;
-
     @NotNull(message = "Post title cannot be null")
     @Size(max = 120, message = "Maximum title characters are 120")
     private String title;
@@ -27,16 +25,11 @@ public class PostForm {
     public PostForm() {
     }
 
-    public PostForm(Long id, String title, String description, Long userId, Location location) {
+    public PostForm(String title, String description, Long userId, Location location) {
         this.title = title;
         this.description = description;
-        this.id = id;
         this.userId = userId;
         this.location = location;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getTitle() {
@@ -47,8 +40,8 @@ public class PostForm {
         return description;
     }
 
-    public Long getUser() {
-        return this.userId;
+    public Long getUserId() {
+        return userId;
     }
 
     public Location getLocation() {

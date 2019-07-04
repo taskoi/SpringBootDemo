@@ -69,16 +69,4 @@ public class CacheConfig extends CachingConfigurerSupport {
                 .cacheDefaults(cacheConfiguration(properties))
                 .withInitialCacheConfigurations(cacheConfigurations).build();
     }
-
-    @Bean
-    public KeyGenerator keyGenerator(){
-        return new CustomKeyGenerator();
-    }
-
-    private class CustomKeyGenerator implements KeyGenerator {
-        @Override
-        public Object generate(Object target, Method method, Object... params) {
-            return target.getClass().getSimpleName() + "_" + method.getName() + "_" + StringUtils.arrayToDelimitedString(params, "_");
-        }
-    }
 }

@@ -50,7 +50,7 @@ public class User implements Serializable, UserDetails {
     private String username;
 
     //defining user posts
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @ApiModelProperty(hidden = true)
     private List<Post> userPostsList;
 
@@ -59,17 +59,17 @@ public class User implements Serializable, UserDetails {
     @JoinColumn(name = "location")
     private Location location;
 
-
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JsonIgnore
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles = new ArrayList<>();
+//
+//    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+//    @JsonIgnore
+//    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+//    private List<Role> roles = new ArrayList<>();
 
     public User() {
     }
 
     public User(String email, String username, String password, String nickname, String firstName,
-                String lastName, Location location, List<Role> roles) {
+                String lastName, Location location) {
         this.email = email;
         this.username = username;
         this.password = password;
@@ -77,7 +77,7 @@ public class User implements Serializable, UserDetails {
         this.firstName = firstName;
         this.lastName = lastName;
         this.location = location;
-        this.roles = roles;
+
     }
 
     public Long getId() {
@@ -148,9 +148,10 @@ public class User implements Serializable, UserDetails {
     @ApiModelProperty(hidden = true)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> list = new ArrayList<>();
-        for (Role role : getRoles()) {
-            list.add(new SimpleGrantedAuthority(role.getRole()));
-        }
+//        for (Role role : getRoles()) {
+//            list.add(new SimpleGrantedAuthority(role.getRole()));
+//        }
+        list.add(new SimpleGrantedAuthority("USER"));
         return list;
     }
 
@@ -186,12 +187,12 @@ public class User implements Serializable, UserDetails {
         return false;
     }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
+//    public List<Role> getRoles() {
+//        return roles;
+//    }
+//
+//    public void setRoles(List<Role> roles) {
+//        this.roles = roles;
+//    }
 
 }

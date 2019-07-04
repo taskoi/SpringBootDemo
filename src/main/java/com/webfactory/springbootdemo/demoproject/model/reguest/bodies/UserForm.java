@@ -2,7 +2,6 @@ package com.webfactory.springbootdemo.demoproject.model.reguest.bodies;
 
 
 import com.webfactory.springbootdemo.demoproject.model.Location;
-import com.webfactory.springbootdemo.demoproject.model.Role;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.UniqueConstraint;
@@ -43,8 +42,8 @@ public class UserForm {
 
     private Location location;
 
-    @ApiModelProperty(hidden = true)
-    private List<Role> roles;
+//    @ApiModelProperty(hidden = true)
+//    private List<Role> roles;
 
     public UserForm() {
 
@@ -126,11 +125,5 @@ public class UserForm {
         this.location = location;
     }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
 }

@@ -12,6 +12,7 @@ import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.PostRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 import com.webfactory.springbootdemo.demoproject.service.PostService;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.cache.annotation.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -41,16 +42,23 @@ public class PostServiceImpl implements PostService {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    @CacheEvict(key = "{#postForm.title, #postForm.userId}")
+    @Caching(put = {
+            @CachePut(value = "post", key = "#result.id")
+    },
+    evict = {
+            @CacheEvict(value = "allPosts",allEntries = true),
+            @CacheEvict(value = "postsByLocation",allEntries = true),
+            @CacheEvict(value = "postsByTitle",allEntries = true)
+    })
     public PostResponse createPost(PostForm postForm) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(postForm.getUser());
+        Optional<User> user = userRepository.findById(postForm.getUserId());
         User actualUser;
 
         if (user.isPresent()) {
             actualUser = user.get();
         } else {
-            throw new UserNotFoundException(String.valueOf(postForm.getUser()));
+            throw new UserNotFoundException(String.valueOf(postForm.getUserId()));
         }
 
         Post post = new Post();
@@ -83,12 +91,22 @@ public class PostServiceImpl implements PostService {
         postResponse.setTitle(postForm.getTitle());
         postResponse.setDescription(postForm.getDescription());
         postResponse.setLocation(location);
-        postResponse.setUserId(postForm.getUser());
+        postResponse.setUserId(postForm.getUserId());
 
         return postResponse;
     }
 
-    @Caching(put = @CachePut(key = "{#postModify.title,#id}"),evict = @CacheEvict(key = "{#postModify.title,#id}"))
+    @Caching(
+            put = {
+                    @CachePut(value = "post", key = "#result.id"),
+                    @CachePut(value = "security-post", key = "{#result.user.username,#result.id}")
+            },
+            evict = {
+                    @CacheEvict(value = "allPosts",allEntries = true),
+                    @CacheEvict(value = "postsByLocation",allEntries = true),
+                    @CacheEvict(value = "postsByTitle",allEntries = true)
+            }
+    )
     public Post updatePost(Long id, PostModify postModify) throws PostNotFoundException{
         Optional<Post> post = postRepository.findById(id);
 
@@ -104,7 +122,7 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post.get());
     }
 
-    @Cacheable("posts")
+    @Cacheable(value = "allPosts")
     public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {
         Page<Post> all = postRepository.findAll(pageable);
         if (all.getSize() == 0)
@@ -116,7 +134,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    @Cacheable(key = "#id")
+    @Cacheable(value = "post",key = "#id")
     public Post findPostById(Long id) throws PostNotFoundException {
         Optional<Post> post = postRepository.findById(id);
         if (!post.isPresent())
@@ -127,7 +145,14 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    @CacheEvict(key = "#id")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "post",key = "#id"),
+                    @CacheEvict(value = "allPosts",allEntries = true),
+                    @CacheEvict(value = "postsByLocation",allEntries = true),
+                    @CacheEvict(value = "postsByTitle",allEntries = true)
+            }
+    )
     public void deletePost(Long id) throws PostNotFoundException {
         if (!postRepository.findById(id).isPresent())
             throw new PostNotFoundException("Post you want to delete does not exist!");
@@ -137,7 +162,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    @Cacheable(key = "#postTitle")
+    @Cacheable(value = "postsByTitle",key = "#postTitle")
     public Page<Post> findByTitle(String postTitle, Pageable pageable) throws PostNotFoundException {
         Page<Post> all = postRepository.findAllByTitle(pageable, postTitle);
 
@@ -150,7 +175,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    @Cacheable(key = "{#location.latitude, #location.longitude}")
+    @Cacheable(value = "postsByLocation",key = "{#location.longitude,#location.latitude}")
     public Page<Post> findByLocation(Location location, Pageable pageable) throws PostNotFoundException {
         Page<Post> all = postRepository.findAllByLocation(pageable, location);
 
@@ -161,11 +186,5 @@ public class PostServiceImpl implements PostService {
             applicationEventPublisher.publishEvent(new FindAllPostsByLocationEvent(this, posts));
             return all;
         }
-    }
-
-    @Override
-    @Cacheable("posts")
-    public List<Post> getall() {
-        return postRepository.findAll();
     }
 }

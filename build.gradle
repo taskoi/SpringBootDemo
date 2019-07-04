@@ -70,8 +70,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-pool2
     compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.6.2'
-
-    compile "org.springframework.boot:spring-boot-configuration-processor"
+    
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: '2.1.6.RELEASE', ext: 'pom'
 

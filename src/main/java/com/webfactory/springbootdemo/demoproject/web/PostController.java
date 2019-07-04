@@ -13,6 +13,7 @@ import com.webfactory.springbootdemo.demoproject.service.impl.PostServiceImpl;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
@@ -79,14 +80,11 @@ public class PostController {
     })
     @PreAuthorize("#oauth2.hasScope('write')")
     @GetMapping("/findAllPosts")
-    public Page<Post> findAll(Pageable pageable) throws PostNotFoundException {
-        return postService.findAll(pageable);
+    public List<Post> findAll(@RequestParam("page")int pageIndex,@RequestParam("size") int pageSize) throws PostNotFoundException {
+        return postService.findAll(PageRequest.of(pageIndex,pageSize)).getContent();
     }
 
-    @GetMapping("/asd")
-    public List<Post> postsa(){
-        return postService.getall();
-    }
+
     @ApiOperation(value = "Search for a post by ID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrived post"),
