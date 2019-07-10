@@ -35,20 +35,20 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 //        System.out.println("password1 = " + password1);
 //    }
 
-    @Autowired
-    @Qualifier("authenticationManagerBean")
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
+    private final CustomUserDetailsService userDetailsService;
 
-    @Autowired
-    @Qualifier("userServiceImpl")
-    UserServiceImpl userDetailsService;
+    private final AuthClientDetailsService authClientDetailsService;
 
-    @Autowired
-    AuthClientDetailsService authClientDetailsService;
+    public AuthorizationServerConfig(@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CustomUserDetailsService userDetailsService, AuthClientDetailsService authClientDetailsService) {
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
+        this.userDetailsService = userDetailsService;
+        this.authClientDetailsService = authClientDetailsService;
+    }
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {

@@ -11,6 +11,7 @@ import com.webfactory.springbootdemo.demoproject.persistance.LogRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
 
 
+import com.webfactory.springbootdemo.demoproject.service.UserService;
 import org.springframework.cache.annotation.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ import java.util.*;
 
 @Service
 @Transactional
-public class UserServiceImpl implements Serializable, UserDetailsService, com.webfactory.springbootdemo.demoproject.service.UserService {
+public class UserServiceImpl implements Serializable, UserService {
 
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
@@ -287,15 +288,6 @@ public class UserServiceImpl implements Serializable, UserDetailsService, com.we
         }
     }
 
-    @Cacheable(value = "user-details", key = "#username")
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null)
-            throw new UsernameNotFoundException("User not found");
-        else
-            return new UserDetailsImpl(user);
-    }
 }
 
 

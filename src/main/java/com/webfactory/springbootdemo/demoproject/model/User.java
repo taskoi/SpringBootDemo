@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "mm_user")
-public class User implements Serializable, UserDetails {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,6 +78,14 @@ public class User implements Serializable, UserDetails {
         this.lastName = lastName;
         this.location = location;
 
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public Long getId() {
@@ -144,48 +152,48 @@ public class User implements Serializable, UserDetails {
         this.userPostsList = userPostsList;
     }
 
-    @Override
-    @ApiModelProperty(hidden = true)
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> list = new ArrayList<>();
-//        for (Role role : getRoles()) {
-//            list.add(new SimpleGrantedAuthority(role.getRole()));
-//        }
-        list.add(new SimpleGrantedAuthority("USER"));
-        return list;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    @ApiModelProperty(hidden = true)
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    @ApiModelProperty(hidden = true)
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    @ApiModelProperty(hidden = true)
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    @ApiModelProperty(hidden = true)
-    public boolean isEnabled() {
-        return false;
-    }
+//    @Override
+//    @ApiModelProperty(hidden = true)
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        Collection<GrantedAuthority> list = new ArrayList<>();
+////        for (Role role : getRoles()) {
+////            list.add(new SimpleGrantedAuthority(role.getRole()));
+////        }
+//        list.add(new SimpleGrantedAuthority("USER"));
+//        return list;
+//    }
+//
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public String getUsername() {
+//        return username;
+//    }
+//
+//    @Override
+//    @ApiModelProperty(hidden = true)
+//    public boolean isAccountNonExpired() {
+//        return false;
+//    }
+//
+//    @Override
+//    @ApiModelProperty(hidden = true)
+//    public boolean isAccountNonLocked() {
+//        return false;
+//    }
+//
+//    @Override
+//    @ApiModelProperty(hidden = true)
+//    public boolean isCredentialsNonExpired() {
+//        return false;
+//    }
+//
+//    @Override
+//    @ApiModelProperty(hidden = true)
+//    public boolean isEnabled() {
+//        return false;
+//    }
 
 //    public List<Role> getRoles() {
 //        return roles;

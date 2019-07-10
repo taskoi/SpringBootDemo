@@ -1,8 +1,6 @@
 package com.webfactory.springbootdemo.demoproject.service;
 
 import com.webfactory.springbootdemo.demoproject.events.CreateUserEvent;
-import com.webfactory.springbootdemo.demoproject.events.FindAllUsersByNicknameEvent;
-import com.webfactory.springbootdemo.demoproject.events.UpdatePostEvent;
 import com.webfactory.springbootdemo.demoproject.events.UpdateUserEvent;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.NicknameNotValidException;
 import com.webfactory.springbootdemo.demoproject.exeptions.user.exceptions.UserExistsException;
@@ -14,9 +12,7 @@ import com.webfactory.springbootdemo.demoproject.model.reguest.bodies.UserForm;
 import com.webfactory.springbootdemo.demoproject.persistance.LocationRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.RoleRepository;
 import com.webfactory.springbootdemo.demoproject.persistance.UserRepository;
-import com.webfactory.springbootdemo.demoproject.service.impl.UserDetailsImpl;
 import com.webfactory.springbootdemo.demoproject.service.impl.UserServiceImpl;
-import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.function.Executable;
